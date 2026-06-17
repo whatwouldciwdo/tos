@@ -6,7 +6,7 @@ import TiptapEditor from "./components/TiptapEditor";
 import { Plus, Trash2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
-export default function Tab4Usulan({ formData, onChange, isEditing = false }: TabProps) {
+export default function Tab4Usulan({ formData, onChange, isEditing = false, ydoc, awarenessProvider, collabUser }: TabProps) {
   const handleInputChange = (field: string, value: any) => {
     if (!isEditing) return;
     onChange({ [field]: value });
@@ -191,6 +191,10 @@ export default function Tab4Usulan({ formData, onChange, isEditing = false }: Ta
         onChange={(html) => handleInputChange("vendorRequirements", html)}
         placeholder="Persyaratan izin usaha, klasifikasi, sertifikat, dll..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="vendorRequirements"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
 
       {/* Usulan Metode Pengadaan - TiptapEditor */}
@@ -200,6 +204,10 @@ export default function Tab4Usulan({ formData, onChange, isEditing = false }: Ta
         onChange={(html) => handleInputChange("procurementMethod", html)}
         placeholder="Metode pengadaan yang diusulkan..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="procurementMethod"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
 
       {/* Usulan Aturan Pembayaran - TiptapEditor */}
@@ -212,6 +220,10 @@ export default function Tab4Usulan({ formData, onChange, isEditing = false }: Ta
         onChange={(html) => handleInputChange("paymentTerms", html)}
         placeholder="Aturan pembayaran, mata uang, persyaratan..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="paymentTerms"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
 
       {/* Usulan Aturan Denda - TiptapEditor */}
@@ -226,6 +238,10 @@ export default function Tab4Usulan({ formData, onChange, isEditing = false }: Ta
         onChange={(html) => handleInputChange("penaltyRules", html)}
         placeholder="Denda keterlambatan, batasan maksimal, dll..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="penaltyRules"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
 
       {/* Rencana Anggaran Biaya (RAB) - Budget Table */}
@@ -243,6 +259,10 @@ export default function Tab4Usulan({ formData, onChange, isEditing = false }: Ta
         onChange={(html) => handleInputChange("otherRequirements", html)}
         placeholder="Persyaratan tambahan lainnya..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="otherRequirements"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
 
       {/* Risk Assessment - TiptapEditor */}
@@ -252,6 +272,10 @@ export default function Tab4Usulan({ formData, onChange, isEditing = false }: Ta
         onChange={(html) => handleInputChange("riskAssessment", html)}
         placeholder="Jelaskan risk assessment untuk pekerjaan ini..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="riskAssessment"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
     </div>
   );

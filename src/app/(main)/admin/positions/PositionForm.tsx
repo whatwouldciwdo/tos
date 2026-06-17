@@ -139,7 +139,7 @@ export default function PositionForm({
             required
             value={bidangId ?? ""}
             onChange={(e) =>
-              setBidangId(e.target.value ? Number(e.target.value) : null)
+              setBidangId(e.target.value ? Number(e.target.value) : "")
             }
             disabled={isGlobal}
           >
@@ -164,7 +164,7 @@ export default function PositionForm({
             style={{ color: 'white' }}
             value={levelOrder ?? ""}
             onChange={(e) =>
-              setLevelOrder(e.target.value ? Number(e.target.value) : null)
+              setLevelOrder(e.target.value)
             }
             placeholder="Urutan di tampilan (angka kecil = lebih bawah)"
           />

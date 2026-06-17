@@ -6,7 +6,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 // Determine log level based on environment
-const logLevel: Prisma.LogLevel[] = process.env.NODE_ENV === 'production' 
+const logLevel: ('query' | 'info' | 'warn' | 'error')[] = process.env.NODE_ENV === 'production' 
   ? ['error']
   : ['query', 'error', 'warn'];
 

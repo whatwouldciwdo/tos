@@ -6,7 +6,7 @@ import { useState } from "react";
 import { AlertModal, ConfirmModal } from "@/components/Modal";
 import { useAlertModal, useConfirmModal } from "@/hooks/useModal";
 
-export default function Tab2Pendahuluan({ formData, onChange, isEditing = false }: TabProps) {
+export default function Tab2Pendahuluan({ formData, onChange, isEditing = false, ydoc, awarenessProvider, collabUser }: TabProps) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   
@@ -213,6 +213,10 @@ export default function Tab2Pendahuluan({ formData, onChange, isEditing = false 
   onChange={(html) => handleInputChange("introduction", html)}
   placeholder="Jelaskan pendahuluan pekerjaan ini..."
   readOnly={!isEditing}
+  ydoc={ydoc}
+  fieldName="introduction"
+  awarenessProvider={awarenessProvider}
+  collabUser={collabUser}
 />
 
 {/* Latar Belakang */}
@@ -223,6 +227,10 @@ export default function Tab2Pendahuluan({ formData, onChange, isEditing = false 
   onChange={(html) => handleInputChange("background", html)}
   placeholder="Jelaskan latar belakang pekerjaan ini..."
   readOnly={!isEditing}
+  ydoc={ydoc}
+  fieldName="background"
+  awarenessProvider={awarenessProvider}
+  collabUser={collabUser}
 />
 
 {/* Tujuan */}
@@ -233,6 +241,10 @@ export default function Tab2Pendahuluan({ formData, onChange, isEditing = false 
   onChange={(html) => handleInputChange("objective", html)}
   placeholder="Jelaskan tujuan dari pekerjaan ini..."
   readOnly={!isEditing}
+  ydoc={ydoc}
+  fieldName="objective"
+  awarenessProvider={awarenessProvider}
+  collabUser={collabUser}
 />
 
 {/* Ruang Lingkup */}
@@ -243,6 +255,10 @@ export default function Tab2Pendahuluan({ formData, onChange, isEditing = false 
   onChange={(html) => handleInputChange("scope", html)}
   placeholder="Jelaskan ruang lingkup pekerjaan secara detail..."
   readOnly={!isEditing}
+  ydoc={ydoc}
+  fieldName="scope"
+  awarenessProvider={awarenessProvider}
+  collabUser={collabUser}
 />
 
 {/* Garansi */}
@@ -252,6 +268,10 @@ export default function Tab2Pendahuluan({ formData, onChange, isEditing = false 
   onChange={(html) => handleInputChange("warranty", html)}
   placeholder="Jelaskan garansi yang diberikan untuk pekerjaan ini..."
   readOnly={!isEditing}
+  ydoc={ydoc}
+  fieldName="warranty"
+  awarenessProvider={awarenessProvider}
+  collabUser={collabUser}
 />
 
 {/* Kriteria yang Diterima */}
@@ -261,6 +281,10 @@ export default function Tab2Pendahuluan({ formData, onChange, isEditing = false 
   onChange={(html) => handleInputChange("acceptanceCriteria", html)}
   placeholder="Jelaskan kriteria penerimaan hasil pekerjaan..."
   readOnly={!isEditing}
+  ydoc={ydoc}
+  fieldName="acceptanceCriteria"
+  awarenessProvider={awarenessProvider}
+  collabUser={collabUser}
 />
 
       {/* Deskripsi Tambahan */}

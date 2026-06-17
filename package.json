@@ -10,11 +10,16 @@
     "db:seed-test": "node prisma/seed-test-users.cjs",
     "test:load": "node scripts/load-test.js",
     "test:load:login": "node scripts/load-test.js --scenario=login",
-    "test:load:create": "node scripts/load-test.js --scenario=create"
+    "test:load:create": "node scripts/load-test.js --scenario=create",
+    "dev:ws": "node ws-server.js",
+    "start:ws": "node ws-server.js",
+    "dev:all": "concurrently -n \"next,ws\" -c \"blue,green\" \"npm run dev\" \"npm run dev:ws\""
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "@tinymce/tinymce-react": "^6.3.0",
+    "@tiptap/extension-collaboration": "^3.27.0",
+    "@tiptap/extension-collaboration-cursor": "^3.0.0",
     "@tiptap/extension-color": "^3.11.0",
     "@tiptap/extension-image": "^3.11.0",
     "@tiptap/extension-link": "^3.11.0",
@@ -31,6 +36,7 @@
     "@tiptap/react": "^3.11.0",
     "@tiptap/starter-kit": "^3.11.0",
     "bcryptjs": "^3.0.3",
+    "concurrently": "^10.0.3",
     "decimal.js": "^10.6.0",
     "docx": "^9.5.1",
     "file-saver": "^2.0.5",
@@ -44,7 +50,9 @@
     "react-dom": "19.2.0",
     "react-spreadsheet": "^0.10.1",
     "scheduler": "^0.27.0",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.31"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -60,6 +68,7 @@
     "eslint-config-next": "16.0.3",
     "prisma": "^6.19.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "ws": "^8.21.0"
   }
 }

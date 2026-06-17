@@ -2007,7 +2007,7 @@ function generateLembarPengesahanTable(
         }),
         // Row 4: Signature space (single empty row with large height)
         new TableRow({
-          height: { value: 1700, rule: HeightRule.AT_LEAST },
+          height: { value: 1700, rule: HeightRule.ATLEAST },
           children: [
             new TableCell({
               children: [new Paragraph("")],

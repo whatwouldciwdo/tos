@@ -17,6 +17,10 @@ import { Color } from "@tiptap/extension-color";
 import { TaskList } from "@tiptap/extension-task-list";
 import { TaskItem } from "@tiptap/extension-task-item";
 import { useCallback, useState, useEffect, useRef } from "react";
+// NEW: Collaboration imports (opsional — tidak mempengaruhi mode non-collab)
+import Collaboration from "@tiptap/extension-collaboration";
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import type * as Y from "yjs";
 import {
   Bold,
   Italic,
@@ -57,6 +61,11 @@ interface TiptapEditorProps {
   required?: boolean;
   readOnly?: boolean;
   onCaptionPrompt?: (currentCaption: string, onConfirm: (newCaption: string) => void) => void;
+  // NEW: Props kolaborasi (opsional — jika tidak diisi, editor berfungsi seperti biasa)
+  ydoc?: Y.Doc | null;
+  fieldName?: string; // Nama unik field, misal: "introduction", "background"
+  awarenessProvider?: any; // WebsocketProvider instance
+  collabUser?: { name: string; color: string }; // Info user untuk cursor label
 }
 
 // ✅ Custom Figure extension with caption support - users manually type full caption including numbering
@@ -916,9 +925,37 @@ export default function TiptapEditor({
   label,
   required = false,
   readOnly = false,
+  // NEW: Props kolaborasi (opsional)
+  ydoc,
+  fieldName,
+  awarenessProvider,
+  collabUser,
 }: TiptapEditorProps) {
+  // Mode kolaborasi aktif jika ydoc dan fieldName disediakan
+  const isCollabMode = !!(ydoc && fieldName);
+
   // Prompt modal for image captions
   const promptModal = usePromptModal();
+
+  // Bangun array extensions — sama persis seperti sebelumnya,
+  // hanya tambahkan Collaboration extensions jika dalam mode kollab
+  const collabExtensions = isCollabMode
+    ? [
+        Collaboration.configure({
+          document: ydoc as Y.Doc,
+          field: fieldName,
+        }),
+        ...(awarenessProvider
+          ? [
+              CollaborationCursor.configure({
+                provider: awarenessProvider,
+                user: collabUser || { name: "Pengguna", color: "#3b82f6" },
+              }),
+            ]
+          : []),
+      ]
+    : [];
+
   const editor = useEditor({
     immediatelyRender: false, // Fix SSR hydration error
     editable: !readOnly, // Control editability
@@ -928,7 +965,9 @@ export default function TiptapEditor({
           levels: [1, 2, 3],
         },
         orderedList: false, // Disable default orderedList to use custom one
-      }),
+        // PENTING: Nonaktifkan history bawaan jika Yjs yang kelola undo/redo
+        history: isCollabMode ? false : undefined,
+      } as any),
       CustomOrderedList,
       Underline,
       TextStyle,
@@ -984,8 +1023,12 @@ export default function TiptapEditor({
           style: "cursor: pointer; max-w-100%;",
         },
       }),
+      // Tambahkan Collaboration extensions jika dalam mode kollab
+      ...collabExtensions,
     ],
-    content: content || "",
+    // Dalam mode kollab, Yjs yang mengatur content. Tapi jika Y.Doc masih kosong
+    // (user pertama yang buka), konten akan diambil dari prop `content`.
+    content: isCollabMode ? undefined : (content || ""),
     onUpdate: ({ editor }) => {
       // ✅ CRITICAL FIX: Always call onChange, regardless of readOnly
       const html = editor.getHTML();
@@ -1007,7 +1050,22 @@ export default function TiptapEditor({
         currentCaption
       );
     },
-  });
+  } as any);
+
+  // Inisialisasi konten dari database jika Y.Doc masih kosong (user pertama)
+  const contentInitialized = useRef(false);
+  useEffect(() => {
+    if (!editor || !isCollabMode || !content || contentInitialized.current) return;
+    // Cek apakah Y.XmlFragment sudah punya konten
+    const fragment = (ydoc as Y.Doc).getXmlFragment(fieldName as string);
+    if (fragment.length === 0) {
+      // Y.Doc kosong — inisialisasi dengan konten dari database
+      editor.commands.setContent(content);
+      console.log(`✅ Collab: Initialized ${fieldName} from database`);
+    }
+    contentInitialized.current = true;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, isCollabMode]);
 
   // Update editor's editable state when readOnly prop changes
   useEffect(() => {
@@ -1017,14 +1075,15 @@ export default function TiptapEditor({
   }, [editor, readOnly]);
 
   // ✅ Sync content from prop, but ONLY when editor is not focused (prevent auto-undo)
+  // Skip sync jika dalam mode kollab — Yjs yang mengatur konten
   useEffect(() => {
-    if (!editor || editor.isFocused) return;
+    if (!editor || editor.isFocused || isCollabMode) return;
     
     const currentContent = editor.getHTML();
     if (content !== currentContent) {
       editor.commands.setContent(content || '');
     }
-  }, [content, editor]);
+  }, [content, editor, isCollabMode]);
 
   // Update content when editor changes
   useEffect(() => {

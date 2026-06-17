@@ -1,4 +1,5 @@
 // Types for ToR Form
+import type * as Y from "yjs";
 
 // NEW: Director Proposal types
 export interface DirectorProposal {
@@ -200,4 +201,12 @@ export interface TabProps {
   onChange: (data: Partial<TorFormData>) => void;
   errors?: Record<string, string>;
   isEditing?: boolean;
+  // Collaboration props (opsional — jika tidak diisi, tab berfungsi seperti biasa)
+  ydoc?: Y.Doc | null;
+  awarenessProvider?: any;
+  collabUser?: { name: string; color: string };
+  torId?: number;
+  bidangId?: number;
+  creatorName?: string;
+  creatorPosition?: string;
 }

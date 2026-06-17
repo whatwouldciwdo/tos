@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { TorStatusStage } from "@prisma/client";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -81,7 +80,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
 
     // 5. Determine Next State
     let nextStepNumber = tor.currentStepNumber;
-    let nextStatusStage = tor.statusStage;
+    let nextStatusStage: any = tor.statusStage;
     let isFinal = false;
 
     if (currentStep.isLastStep) {

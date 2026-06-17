@@ -138,6 +138,7 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
             creatorName={tor.creator?.name || creatorName}
             creatorPosition={tor.creator?.position?.name || dbUser.position.name}
             hasExportRole={hasExportRole}
+            currentUserName={dbUser.name}
           />
         </div>
       </div>
@@ -159,6 +160,7 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
           creatorName={creatorName}
           creatorPosition={dbUser.position.name}
           hasExportRole={hasExportRole}
+          currentUserName={creatorName}
         />
       </div>
     </div>

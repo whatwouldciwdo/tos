@@ -4,7 +4,7 @@ import { TabProps } from "./types";
 import TiptapEditor from "./components/TiptapEditor";
 import GanttTableEditor from "./components/GanttTableEditor";
 
-export default function Tab3TahapanPekerjaan({ formData, onChange, isEditing = false }: TabProps) {
+export default function Tab3TahapanPekerjaan({ formData, onChange, isEditing = false, ydoc, awarenessProvider, collabUser }: TabProps) {
   const handleInputChange = (field: string, value: any) => {
     if (!isEditing) return; // Prevent changes when not editing
     onChange({ [field]: value });
@@ -35,6 +35,10 @@ export default function Tab3TahapanPekerjaan({ formData, onChange, isEditing = f
         onChange={(html) => handleInputChange("workStagesExplanation", html)}
         placeholder="Tambahkan penjelasan mengenai tahapan pekerjaan jika diperlukan..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="workStagesExplanation"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
 
       {/* Persyaratan Pengiriman */}
@@ -48,6 +52,10 @@ export default function Tab3TahapanPekerjaan({ formData, onChange, isEditing = f
         onChange={(html) => handleInputChange("deliveryRequirements", html)}
         placeholder="Jelaskan persyaratan pengiriman hasil pekerjaan..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="deliveryRequirements"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
 
       {/* Titik Serah Terima */}
@@ -59,6 +67,10 @@ Jl. Raya Bojonegara - Salira, Desa Margasari Kecamatan Puloampel, Kab. Serang - 
         onChange={(html) => handleInputChange("handoverPoint", html)}
         placeholder="Jelaskan titik/lokasi serah terima hasil pekerjaan..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="handoverPoint"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
 
       {/* Mekanisme Serah Terima */}
@@ -68,6 +80,10 @@ Jl. Raya Bojonegara - Salira, Desa Margasari Kecamatan Puloampel, Kab. Serang - 
         onChange={(html) => handleInputChange("handoverMechanism", html)}
         placeholder="Jelaskan prosedur dan mekanisme serah terima hasil pekerjaan..."
         readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="handoverMechanism"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
       />
     </div>
   );

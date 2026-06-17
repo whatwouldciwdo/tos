@@ -13,6 +13,9 @@ import Tab6Lampiran from "./Tab6Lampiran";
 import { Edit, X } from "lucide-react";
 import { AlertModal, ConfirmModal } from "@/components/Modal";
 import { useAlertModal, useConfirmModal } from "@/hooks/useModal";
+import { useCollaboration } from "@/hooks/useCollaboration";
+import { useFieldSync } from "@/hooks/useFieldSync";
+import CollabPresence from "@/components/CollabPresence";
 
 interface TorFormLayoutProps {
   torId?: number;
@@ -23,6 +26,8 @@ interface TorFormLayoutProps {
   creatorPosition?: string;
   isViewOnly?: boolean;
   hasExportRole?: boolean;
+  // NEW: Info pengguna yang sedang login (untuk fitur kolaborasi)
+  currentUserName?: string;
 }
 
 export default function TorFormLayout({
@@ -34,9 +39,29 @@ export default function TorFormLayout({
   creatorPosition,
   isViewOnly = false,
   hasExportRole = false,
+  currentUserName = "Pengguna",
 }: TorFormLayoutProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>("informasi-umum");
+
+  // =============================================================
+  // FITUR KOLABORASI REAL-TIME
+  // Inisialisasi hook kolaborasi — hanya aktif jika torId ada
+  // =============================================================
+  const {
+    ydoc,
+    provider,
+    connected,
+    collaborators,
+    updatePresence,
+    userColor,
+  } = useCollaboration(torId, currentUserName);
+
+  // Update awareness saat tab aktif berganti
+  useEffect(() => {
+    updatePresence({ activeTab });
+  }, [activeTab, updatePresence]);
+  // =============================================================
   const [formData, setFormData] = useState<TorFormData>({
     title: initialData?.title || "",
     description: initialData?.description || "",
@@ -88,6 +113,9 @@ export default function TorFormLayout({
     performanceGuarantees: initialData?.performanceGuarantees || [],
     statusStage: initialData?.statusStage,
   });
+
+  // Sinkronisasi field non-TipTap via Yjs
+  const { syncField } = useFieldSync(ydoc, formData, setFormData);
   
   const [isSaving, setIsSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -144,6 +172,9 @@ export default function TorFormLayout({
 
   const handleChange = (data: Partial<TorFormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
+    Object.entries(data).forEach(([key, val]) => {
+      syncField(key, val);
+    });
   };
 
   // Reload data from database
@@ -489,10 +520,19 @@ export default function TorFormLayout({
 
 
         {/* Header */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between gap-4">
           <h1 className="text-3xl font-semibold text-gray-900">
             {torId ? "Edit TOR" : "Create New TOR"}
           </h1>
+          {/* Presence indicator — hanya tampil jika ada torId (mode edit) */}
+          {torId && (
+            <CollabPresence
+              collaborators={collaborators}
+              connected={connected}
+              currentUserName={currentUserName}
+              currentUserColor={userColor}
+            />
+          )}
         </div>
 
         {/* Info Card */}
@@ -646,6 +686,10 @@ export default function TorFormLayout({
                 bidangId={formData.bidangId}
                 creatorName={creatorName}
                 creatorPosition={creatorPosition}
+                // Teruskan props kolaborasi ke semua tab
+                ydoc={ydoc}
+                awarenessProvider={provider}
+                collabUser={{ name: currentUserName, color: userColor }}
               />
             )}
           </div>
