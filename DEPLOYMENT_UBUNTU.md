@@ -138,6 +138,12 @@ git pull origin main
 docker compose up -d --build
 ```
 
+### 🗄️ Menjalankan Migrasi Database Manual (Jika Ada Perubahan Schema)
+Jika terjadi error schema out of sync (seperti `P2022 column does not exist`):
+```bash
+docker exec -it tor-online-app npx prisma migrate deploy
+```
+
 ### ⏹️ Menghentikan Service
 ```bash
 docker compose down
