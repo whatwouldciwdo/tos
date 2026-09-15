@@ -167,7 +167,7 @@ export default function Tab1InformasiUmum({ formData, onChange, isEditing = fals
                 <option value="IDR">IDR (Rupiah)</option>
                 <option value="USD">USD (Dollar)</option>
                 <option value="EUR">EUR (Euro)</option>
-                <option value="CNY">CNY (Yuan)</option>
+                <option value="JPY">JPY (Yen)</option>
               </select>
             </div>
             <div className="col-span-2">

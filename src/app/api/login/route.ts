@@ -58,10 +58,12 @@ export async function POST(req: NextRequest) {
 
     const res = NextResponse.json({ message: "Login berhasil" });
 
+    const isHttps = process.env.NEXT_PUBLIC_APP_URL ? process.env.NEXT_PUBLIC_APP_URL.startsWith("https://") : false;
+
     // set cookie httpOnly
     res.cookies.set("auth-token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isHttps,
       maxAge: 60 * 60 * 24, // 1 hari
       sameSite: "lax",
       path: "/",
@@ -74,11 +76,16 @@ export async function POST(req: NextRequest) {
       return handlePrismaError(err);
     }
 
-    console.error('Login error:', err.message);
-    return errorResponse(
-      "Terjadi kesalahan saat login. Silakan coba lagi.",
-      500,
-      "INTERNAL_ERROR"
+    console.error('Login error:', err.message, err.stack);
+    return NextResponse.json(
+      {
+        error: {
+          message: "Terjadi kesalahan saat login: " + err.message,
+          code: "INTERNAL_ERROR",
+          stack: err.stack,
+        },
+      },
+      { status: 500 }
     );
   }
 }

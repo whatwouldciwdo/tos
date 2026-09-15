@@ -167,10 +167,13 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       penaltyRules,
       otherRequirements,
       riskAssessment, // Risk Assessment
+      revisionTermOfReference,
       subtotal,
       ppn,
       pph,
       grandTotal,
+      ppnRate,
+      ppnIncluded,
       // Tab 5: Lembar Pengesahan
       approvalSignatures,
       // Tab 6: Lampiran
@@ -178,6 +181,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       inspectionTestingPlans,
       documentRequestSheets,
       performanceGuarantees,
+      attachments,
       // Budget items
       budgetItems,
     } = body;
@@ -232,10 +236,13 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         penaltyRules,
         otherRequirements,
         riskAssessment, // Risk Assessment
+        revisionTermOfReference,
         subtotal,
         ppn,
         pph,
         grandTotal,
+        ppnRate,
+        ppnIncluded,
         // Tab 5
         approvalSignatures,
         // Tab 6
@@ -243,6 +250,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         inspectionTestingPlans,
         documentRequestSheets,
         performanceGuarantees,
+        attachments,
         // Budget items - delete old and create new
         budgetItems: budgetItems
           ? {

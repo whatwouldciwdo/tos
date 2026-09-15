@@ -277,6 +277,18 @@ export default function Tab4Usulan({ formData, onChange, isEditing = false, ydoc
         awarenessProvider={awarenessProvider}
         collabUser={collabUser}
       />
+
+      <TiptapEditor
+        label="Revisi Term of Reference"
+        content={formData.revisionTermOfReference || `<p><strong>Revisi Term of Reference</strong></p><p>Term of Reference ini memungkinkan untuk direvisi, dengan ketentuan :</p><p>a. Adanya perubahan isi DMR yang mempengaruhi isi TOR.</p><p>b. Mencantumkan komitmen waktu revisi TOR dalam hari kalender, sebelum dimulainya pelaksanaan proses pengadaan barang atau jasa.</p>`}
+        onChange={(html) => handleInputChange("revisionTermOfReference", html)}
+        placeholder="Ketentuan revisi Term of Reference..."
+        readOnly={!isEditing}
+        ydoc={ydoc}
+        fieldName="revisionTermOfReference"
+        awarenessProvider={awarenessProvider}
+        collabUser={collabUser}
+      />
     </div>
   );
 }

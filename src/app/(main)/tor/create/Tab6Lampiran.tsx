@@ -1,6 +1,6 @@
 "use client";
 
-import { TabProps, TechnicalParticular, InspectionTestingPlan, DocumentRequestSheet, PerformanceGuarantee, ColumnConfig } from "./types";
+import { TabProps, TechnicalParticular, InspectionTestingPlan, DocumentRequestSheet, PerformanceGuarantee, ColumnConfig, TorAttachment } from "./types";
 import { v4 as uuidv4 } from "uuid";
 import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
@@ -45,6 +45,31 @@ const inputClass =
   "w-full px-3 py-2.5 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-base";
 
 export default function Tab6Lampiran({ formData, onChange, isEditing }: TabProps) {
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
+
+  const handleAttachmentUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !isEditing) return;
+    setUploadingAttachment(true);
+    setAttachmentError(null);
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const response = await fetch("/api/upload", { method: "POST", body });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Upload gagal");
+      const attachment: TorAttachment = { id: uuidv4(), name: file.name, filename: result.filename, url: result.url, type: file.type, size: file.size };
+      onChange({ attachments: [...(formData.attachments || []), attachment] });
+    } catch (error: any) {
+      setAttachmentError(error.message || "Upload gagal");
+    } finally {
+      setUploadingAttachment(false);
+      event.target.value = "";
+    }
+  };
+
+  const removeAttachment = (id: string) => onChange({ attachments: (formData.attachments || []).filter((item) => item.id !== id) });
 
   // Generic helper to add item
   const addItem = (field: keyof typeof formData, newItem: any) => {
@@ -347,6 +372,17 @@ export default function Tab6Lampiran({ formData, onChange, isEditing }: TabProps
       <h2 className="text-xl font-semibold text-gray-900 bg-blue-100 px-4 py-2 rounded">
         Lampiran
       </h2>
+
+      <section className="rounded-lg border border-gray-200 p-4">
+        <h3 className="font-semibold text-gray-800">Upload File Lampiran</h3>
+        {isEditing && <input type="file" accept=".doc,.docx,.pdf,.xls,.xlsx,application/pdf,application/msword,application/vnd.ms-excel" onChange={handleAttachmentUpload} disabled={uploadingAttachment} className="mt-3 block w-full text-sm" />}
+        <p className="mt-1 text-xs text-gray-500">Format Word, PDF, Excel (maks. 25MB). Approver dapat mengunduh file dari daftar di bawah.</p>
+        {uploadingAttachment && <p className="text-sm text-blue-600">Mengupload...</p>}
+        {attachmentError && <p className="text-sm text-red-600">{attachmentError}</p>}
+        <ul className="mt-3 space-y-2">
+          {(formData.attachments || []).map((attachment) => <li key={attachment.id} className="flex items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm"><a href={`/${attachment.url}`} download={attachment.name} className="text-blue-600 hover:underline">Unduh {attachment.name}</a>{isEditing && <button type="button" onClick={() => removeAttachment(attachment.id)} className="text-red-600" aria-label={`Hapus ${attachment.name}`}><Trash2 size={15} /></button>}</li>)}
+        </ul>
+      </section>
 
       {/* Template Selection Dropdown */}
       {isEditing && templates.length > 0 && (

@@ -25,12 +25,12 @@ export default function LoginPage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.message || "Login gagal");
+        setError(data.error?.message || data.message || "Login gagal");
         setLoading(false);
         return;
       }
 
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err) {
       console.error(err);
       setError("Terjadi kesalahan jaringan");

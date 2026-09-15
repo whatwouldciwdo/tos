@@ -65,10 +65,17 @@ function parseHtmlToParagraphs(html: string | null): Array<Paragraph | Table> {
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
+      .replace(/&#39;|&apos;/g, "'")
+      .replace(/&#(\\d+);/g, (_match, code) => String.fromCodePoint(Number(code)))
+      .replace(/&#x([0-9a-f]+);/gi, (_match, code) => String.fromCodePoint(parseInt(code, 16)))
+      // Repair legacy content where the per-mille symbol was persisted as "???".
+      // Keep the pattern narrow so legitimate question marks are not modified.
+      .replace(/(\d)\?{3}(?=\s*\((?:satu\s+)?per\s+mil\))/gi, '$1‰')
       .trim();
   }
   
-  // Helper: Parse inline formatting (bold, italic, underline, strikethrough)
+  // Helper: Parse inline formatting. Strikethrough is intentionally ignored
+  // so old editor marks cannot make exported content look crossed out.
   function parseInlineText(text: string): TextRun[] {
     const runs: TextRun[] = [];
     let cleanedText = text.replace(/^\u003cp[^\u003e]*\u003e|\u003c\/p\u003e$/gi, '').trim();
@@ -78,7 +85,6 @@ function parseHtmlToParagraphs(html: string | null): Array<Paragraph | Table> {
     let isBold = false;
     let isItalic = false;
     let isUnderline = false;
-    let isStrikethrough = false;
     
     for (const part of parts) {
       if (!part) continue;
@@ -96,9 +102,9 @@ function parseHtmlToParagraphs(html: string | null): Array<Paragraph | Table> {
       } else if (/\u003c\/u\u003e/i.test(part)) {
         isUnderline = false;
       } else if (/\u003c(s|strike|del)[^\u003e]*\u003e/i.test(part)) {
-        isStrikethrough = true;
+        continue;
       } else if (/\u003c\/(s|strike|del)\u003e/i.test(part)) {
-        isStrikethrough = false;
+        continue;
       } else if (/\u003c\/?p[^\u003e]*\u003e/i.test(part)) {
         continue;
       } else if (!/^\u003c/.test(part)) {
@@ -112,7 +118,6 @@ function parseHtmlToParagraphs(html: string | null): Array<Paragraph | Table> {
             bold: isBold,
             italics: isItalic,
             underline: isUnderline ? {} : undefined,
-            strike: isStrikethrough,
           }));
         }
       }
@@ -502,7 +507,9 @@ function parseHtmlToParagraphs(html: string | null): Array<Paragraph | Table> {
         
         if (runs.length > 0) {
           runs.unshift(new TextRun({
-            text: '• ',
+            // Use an ASCII marker; some DOCX/PDF viewers render the bullet
+            // glyph as "???" when the selected font lacks that glyph.
+            text: '- ',
             font: "Arial",
             size: 20,
           }));
@@ -2777,12 +2784,12 @@ new Table({
           shading: { fill: "D3D3D3", color: "auto" },
         }),
         new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: "Unit price IDR", bold: true, font: "Arial", size: 20 })], alignment: AlignmentType.CENTER })],
+          children: [new Paragraph({ children: [new TextRun({ text: `Unit price ${tor.budgetCurrency || "IDR"}`, bold: true, font: "Arial", size: 20 })], alignment: AlignmentType.CENTER })],
           width: { size: 15, type: WidthType.PERCENTAGE },
           shading: { fill: "D3D3D3", color: "auto" },
         }),
         new TableCell({
-          children: [new Paragraph({ children: [new TextRun({ text: "Total Price IDR", bold: true, font: "Arial", size: 20 })], alignment: AlignmentType.CENTER })],
+          children: [new Paragraph({ children: [new TextRun({ text: `Total Price ${tor.budgetCurrency || "IDR"}`, bold: true, font: "Arial", size: 20 })], alignment: AlignmentType.CENTER })],
           width: { size: 20, type: WidthType.PERCENTAGE },
           shading: { fill: "D3D3D3", color: "auto" },
         }),
@@ -2817,7 +2824,7 @@ new Table({
     new TableRow({
       children: [
         new TableCell({ 
-          children: [new Paragraph({ children: [new TextRun({ text: "PPN 11%", bold: true, font: "Arial", size: 20 })], alignment: AlignmentType.RIGHT })],
+          children: [new Paragraph({ children: [new TextRun({ text: tor.ppnIncluded === false ? "PPN (Exclude)" : `PPN ${tor.ppnRate || 11}%`, bold: true, font: "Arial", size: 20 })], alignment: AlignmentType.RIGHT })],
           columnSpan: 5,
         }),
         new TableCell({ 
@@ -2852,7 +2859,7 @@ new Table({
 new Paragraph({
   children: [
     new TextRun({
-      text: `Rencana anggaran sebesar Rp. ${tor.grandTotal ? Number(tor.grandTotal).toLocaleString("id-ID") : "0"},00 termasuk ppn 11%.`,
+      text: `Rencana anggaran sebesar ${tor.budgetCurrency || "IDR"} ${tor.grandTotal ? Number(tor.grandTotal).toLocaleString("id-ID") : "0"},00 ${tor.ppnIncluded === false ? "tidak termasuk PPN" : `termasuk PPN ${tor.ppnRate || 11}%`}.`,
       font: "Arial",
       size: 20,
     }),
@@ -2887,6 +2894,12 @@ new Paragraph({
   spacing: { before: 200, after: 100 },
 }),
 ...parseHtmlToParagraphs(tor.riskAssessment),
+
+new Paragraph({
+  children: [new TextRun({ text: "19. REVISI TERM OF REFERENCE", font: "Arial", size: 20, bold: true })],
+  spacing: { before: 200, after: 100 },
+}),
+...parseHtmlToParagraphs(tor.revisionTermOfReference),
 
 
 
@@ -3137,6 +3150,17 @@ new Paragraph({
             ...((tor.performanceGuarantees && Array.isArray(tor.performanceGuarantees) && tor.performanceGuarantees.length > 0)
               ? [generatePgrsTable(tor.performanceGuarantees)]
               : [new Paragraph({ text: "-", spacing: { after: 200 } })]),
+
+            new Paragraph({
+              children: [new TextRun({ text: "5. FILE LAMPIRAN", font: "Arial", size: 20, bold: true })],
+              spacing: { before: 400, after: 100 },
+            }),
+            ...((Array.isArray(tor.attachments) && tor.attachments.length > 0)
+              ? tor.attachments.map((file: any, index: number) => new Paragraph({
+                  children: [new TextRun({ text: `${index + 1}. ${file.name || file.filename} (${file.type || "file"})`, font: "Arial", size: 20 })],
+                  spacing: { after: 80 },
+                }))
+              : [new Paragraph({ text: "-", spacing: { after: 200 } })]),
           ],
         },
       ],
@@ -3146,7 +3170,7 @@ new Paragraph({
 
     console.log("✅ Document export successful!");
 
-    return new NextResponse(buffer as any, {
+    return new NextResponse(buffer as unknown as BodyInit, {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "Content-Disposition": `attachment; filename="TOR-${tor.number || 'draft'}.docx"`,

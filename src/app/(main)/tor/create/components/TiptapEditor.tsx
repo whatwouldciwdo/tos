@@ -19,7 +19,7 @@ import { TaskItem } from "@tiptap/extension-task-item";
 import { useCallback, useState, useEffect, useRef } from "react";
 // NEW: Collaboration imports (opsional — tidak mempengaruhi mode non-collab)
 import Collaboration from "@tiptap/extension-collaboration";
-import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import type * as Y from "yjs";
 import {
   Bold,
@@ -947,7 +947,7 @@ export default function TiptapEditor({
         }),
         ...(awarenessProvider
           ? [
-              CollaborationCursor.configure({
+              CollaborationCaret.configure({
                 provider: awarenessProvider,
                 user: collabUser || { name: "Pengguna", color: "#3b82f6" },
               }),
@@ -1038,9 +1038,7 @@ export default function TiptapEditor({
     editorProps: {
       attributes: {
         class:
-          `prose prose-sm sm:prose lg:prose-lg xl:prose-2xl max-w-none focus:outline-none min-h-[200px] p-4 text-gray-900 ${
-            readOnly ? "pointer-events-none" : ""
-          }`,
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl max-w-none focus:outline-none min-h-[200px] p-4 text-gray-900",
       },
     },
     onCaptionPrompt: (currentCaption: string, onConfirm: (newCaption: string) => void) => {
@@ -1050,7 +1048,7 @@ export default function TiptapEditor({
         currentCaption
       );
     },
-  } as any);
+  } as any, [isCollabMode, !!awarenessProvider, ydoc, fieldName]);
 
   // Inisialisasi konten dari database jika Y.Doc masih kosong (user pertama)
   const contentInitialized = useRef(false);
@@ -1237,7 +1235,7 @@ export default function TiptapEditor({
           </label>
         )}
         <div className={`border rounded-lg overflow-hidden shadow-sm ${
-          readOnly ? "border-gray-200 bg-gray-50" : "border-gray-300 bg-white"
+          readOnly ? "border-gray-200 bg-gray-50 pointer-events-none" : "border-gray-300 bg-white"
         }`}>
           {!readOnly && <MenuBar editor={editor} promptModal={promptModal} />}
           <EditorContent editor={editor} />

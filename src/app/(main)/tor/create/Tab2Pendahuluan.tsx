@@ -103,17 +103,15 @@ export default function Tab2Pendahuluan({ formData, onChange, isEditing = false,
         Pendahuluan
       </h2>
 
-      {/* Judul Pekerjaan */}
+      {/* Judul otomatis dari Informasi Umum */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Judul Pekerjaan <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
-          value={formData.title || ""}
-          onChange={(e) => handleInputChange("title", e.target.value)}
-          placeholder="Masukkan judul pekerjaan"
-          disabled={!isEditing}
+          value={formData.program || formData.title || ""}
+          readOnly
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
           required
         />

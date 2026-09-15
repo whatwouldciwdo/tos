@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useMemo } from "react";
 import { TorFormData, BudgetItem } from "../types";
 import Decimal from "decimal.js";
 
@@ -13,6 +13,8 @@ interface BudgetTableProps {
 export default function BudgetTable({ formData, onChange, isEditing = true }: BudgetTableProps) {
   const budgetItems = formData.budgetItems || [];
   const ppnRate = formData.ppnRate ?? 11; // Default to 11% if not set
+  const ppnIncluded = formData.ppnIncluded ?? true;
+  const budgetItemTotalsKey = budgetItems.map((item) => item.totalPrice).join(",");
 
   // ✅ FIX: Calculate totals using useMemo for display only
   const calculatedTotals = useMemo(() => {
@@ -20,7 +22,7 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
       return sum.plus(new Decimal(item.totalPrice || 0));
     }, new Decimal(0));
     
-    const ppnDecimal = subtotalDecimal.times(ppnRate / 100).toDecimalPlaces(2);
+    const ppnDecimal = ppnIncluded ? subtotalDecimal.times(ppnRate / 100).toDecimalPlaces(2) : new Decimal(0);
     const grandTotalDecimal = subtotalDecimal.plus(ppnDecimal).toDecimalPlaces(2);
 
     return {
@@ -28,7 +30,7 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
       ppn: ppnDecimal.toNumber(),
       grandTotal: grandTotalDecimal.toNumber(),
     };
-  }, [budgetItems.map(item => item.totalPrice).join(','), ppnRate]);
+  }, [budgetItemTotalsKey, ppnRate, ppnIncluded]);
 
   const addRow = () => {
     if (!isEditing) return;
@@ -89,7 +91,7 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
     
     // Calculate PPN using current rate
     const currentPpnRate = formData.ppnRate ?? 11;
-    const ppnDecimal = subtotalDecimal.times(currentPpnRate / 100).toDecimalPlaces(2);
+    const ppnDecimal = ppnIncluded ? subtotalDecimal.times(currentPpnRate / 100).toDecimalPlaces(2) : new Decimal(0);
     
     // Calculate grand total
     const grandTotalDecimal = subtotalDecimal.plus(ppnDecimal).toDecimalPlaces(2);
@@ -105,7 +107,7 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
-      currency: "IDR",
+      currency: formData.budgetCurrency || "IDR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     }).format(value);
@@ -122,8 +124,8 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
               <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">Description</th>
               <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">Qty</th>
               <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">Unit</th>
-              <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">Unit Price (IDR)</th>
-              <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">Total Price (IDR)</th>
+              <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">Unit Price ({formData.budgetCurrency || "IDR"})</th>
+              <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">Total Price ({formData.budgetCurrency || "IDR"})</th>
               {isEditing && (
                 <th className="px-3 py-2 text-center font-medium text-gray-700 border-b">Action</th>
               )}
@@ -231,6 +233,7 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
           <div className="flex justify-between items-center text-sm">
             <div className="flex items-center gap-2">
               <span className="text-gray-700">PPN:</span>
+              {isEditing && <select value={ppnIncluded ? "include" : "exclude"} onChange={(e) => onChange({ ppnIncluded: e.target.value === "include" })} className="px-2 py-1 border border-gray-300 rounded text-gray-900"><option value="include">Include PPN</option><option value="exclude">Exclude PPN</option></select>}
               {isEditing ? (
                 <input
                   type="number"
@@ -260,7 +263,7 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
       
       {/* Note */}
       <div className="text-xs text-gray-600 italic">
-        <span>Rencana anggaran sebesar {formatCurrency(calculatedTotals.grandTotal)} termasuk PPN {ppnRate}%.</span>
+        <span>Rencana anggaran sebesar {formatCurrency(calculatedTotals.grandTotal)} {ppnIncluded ? `termasuk PPN ${ppnRate}%` : "tidak termasuk PPN"}.</span>
       </div>
     </div>
   );

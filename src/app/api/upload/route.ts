@@ -17,19 +17,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file type
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { message: "Invalid file type. Only images are allowed." },
+        { message: "Invalid file type. Only images, Word, PDF, and Excel files are allowed." },
         { status: 400 }
       );
     }
 
     // Validate file size (max 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 25 * 1024 * 1024; // 25MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { message: "File size exceeds 5MB limit" },
+        { message: "File size exceeds 25MB limit" },
         { status: 400 }
       );
     }

@@ -106,15 +106,19 @@ export async function POST(req: NextRequest) {
       penaltyRules,
       otherRequirements,
       riskAssessment, // Risk Assessment
+      revisionTermOfReference,
       subtotal,
       ppn,
       pph,
       grandTotal,
+      ppnRate,
+      ppnIncluded,
       // Tab 6: Lampiran
       technicalParticulars,
       inspectionTestingPlans,
       documentRequestSheets,
       performanceGuarantees,
+      attachments,
       // Budget items
       budgetItems,
     } = body;
@@ -185,15 +189,19 @@ export async function POST(req: NextRequest) {
           penaltyRules,
           otherRequirements,
           riskAssessment,
+          revisionTermOfReference,
           subtotal,
           ppn,
           pph,
           grandTotal,
+          ppnRate,
+          ppnIncluded: ppnIncluded ?? true,
           // Tab 6
           technicalParticulars,
           inspectionTestingPlans,
           documentRequestSheets,
           performanceGuarantees,
+          attachments: attachments || null,
           // Budget items
           budgetItems: budgetItems
             ? {

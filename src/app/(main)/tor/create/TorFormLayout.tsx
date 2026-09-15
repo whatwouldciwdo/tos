@@ -1,7 +1,7 @@
 "use client";
 
 import { saveAs } from "file-saver";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { TorFormData, TabId } from "./types";
 import Tab1InformasiUmum from "./Tab1InformasiUmum";
@@ -43,6 +43,11 @@ export default function TorFormLayout({
 }: TorFormLayoutProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>("informasi-umum");
+
+  // Refs for auto-save and date initialization
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSaveDataRef = useRef<string>('');
+  const hasInitializedDates = useRef(false);
 
   // =============================================================
   // FITUR KOLABORASI REAL-TIME
@@ -106,11 +111,14 @@ export default function TorFormLayout({
     penaltyRules: initialData?.penaltyRules || "",
     otherRequirements: initialData?.otherRequirements || "",
     ppnRate: initialData?.ppnRate ?? 11, // Default PPN to 11%
+    ppnIncluded: initialData?.ppnIncluded ?? true,
+    revisionTermOfReference: initialData?.revisionTermOfReference || "<p><strong>Revisi Term of Reference</strong></p><p>Term of Reference ini memungkinkan untuk direvisi, dengan ketentuan :</p><p>a. Adanya perubahan isi DMR yang mempengaruhi isi TOR.</p><p>b. Mencantumkan komitmen waktu revisi TOR dalam hari kalender, sebelum dimulainya pelaksanaan proses pengadaan barang atau jasa.</p>",
     approvalSignatures: initialData?.approvalSignatures || [],
     technicalParticulars: initialData?.technicalParticulars || [],
     inspectionTestingPlans: initialData?.inspectionTestingPlans || [],
     documentRequestSheets: initialData?.documentRequestSheets || [],
     performanceGuarantees: initialData?.performanceGuarantees || [],
+    attachments: initialData?.attachments || [],
     statusStage: initialData?.statusStage,
   });
 
@@ -123,37 +131,47 @@ export default function TorFormLayout({
   const [isReloading, setIsReloading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isChangingTab, setIsChangingTab] = useState(false);
+
+  // Check if there are unsaved changes
+  const hasUnsavedChanges = useMemo(() => {
+    if (!lastSaveDataRef.current) return false;
+    return JSON.stringify(formData) !== lastSaveDataRef.current;
+  }, [formData, lastSaved]);
   
   // Modal hooks
   const alertModal = useAlertModal();
   const confirmModal = useConfirmModal();
   
   // Per-tab editing state
-  const [tabEditingState, setTabEditingState] = useState<Record<TabId, boolean>>({
-    "informasi-umum": true,
+  const [tabEditingState, setTabEditingState] = useState<Record<TabId, boolean>>(() => ({
+    "informasi-umum": !isViewOnly,
     "pendahuluan": false,
     "tahapan-pekerjaan": false,
     "usulan": false,
     "lembar-pengesahan": false,
-    "lampiran": false,
-  });
+    // Lampiran dapat diunggah langsung saat membuat/mengedit TOR.
+    // Sebelumnya false membuat kontrol upload tidak dirender sebelum tombol Edit
+    // pada toolbar tab ditekan.
+    "lampiran": !isViewOnly,
+  }));
 
-  // ✅ FIX: Debounced auto-save
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastSaveDataRef = useRef<string>('');
-  const hasInitializedDates = useRef(false);
-
-  // Initialize dates on client-side
+  // Initialize dates on client-side and set initial save state reference
   useEffect(() => {
     if (!hasInitializedDates.current && !initialData && !formData.creationDate) {
       const today = new Date().toISOString().split("T")[0];
       const year = new Date().getFullYear();
-      setFormData((prev) => ({
-        ...prev,
-        creationDate: today,
-        creationYear: year,
-      }));
+      setFormData((prev) => {
+        const updated = {
+          ...prev,
+          creationDate: today,
+          creationYear: year,
+        };
+        lastSaveDataRef.current = JSON.stringify(updated);
+        return updated;
+      });
       hasInitializedDates.current = true;
+    } else {
+      lastSaveDataRef.current = JSON.stringify(formData);
     }
   }, []);
 
@@ -171,8 +189,9 @@ export default function TorFormLayout({
   };
 
   const handleChange = (data: Partial<TorFormData>) => {
-    setFormData((prev) => ({ ...prev, ...data }));
-    Object.entries(data).forEach(([key, val]) => {
+    const normalized = data.program !== undefined ? { ...data, title: data.program } : data;
+    setFormData((prev) => ({ ...prev, ...normalized }));
+    Object.entries(normalized).forEach(([key, val]) => {
       syncField(key, val);
     });
   };
@@ -192,7 +211,7 @@ export default function TorFormLayout({
       
       const freshData = await response.json();
       
-      setFormData({
+      const reloadedFormData = {
         title: freshData.title || "",
         description: freshData.description || "",
         number: freshData.number,
@@ -236,15 +255,20 @@ export default function TorFormLayout({
         penaltyRules: freshData.penaltyRules || "",
         otherRequirements: freshData.otherRequirements || "",
         ppnRate: freshData.ppnRate ?? 11, // Default PPN to 11%
+        ppnIncluded: freshData.ppnIncluded ?? true,
+        revisionTermOfReference: freshData.revisionTermOfReference || "",
         approvalSignatures: freshData.approvalSignatures || [],
         technicalParticulars: freshData.technicalParticulars || [],
         inspectionTestingPlans: freshData.inspectionTestingPlans || [],
         documentRequestSheets: freshData.documentRequestSheets || [],
         performanceGuarantees: freshData.performanceGuarantees || [],
-      });
+        attachments: freshData.attachments || [],
+      };
+
+      setFormData(reloadedFormData);
       
       // Update last saved data reference
-      lastSaveDataRef.current = JSON.stringify(freshData);
+      lastSaveDataRef.current = JSON.stringify(reloadedFormData);
       
       console.log('✅ Data reloaded successfully');
     } catch (error: any) {
@@ -283,25 +307,11 @@ export default function TorFormLayout({
         throw new Error(error.message || "Failed to save");
       }
 
-      const savedTor = await response.json();
+      const responseData = await response.json();
+      const savedTor = responseData.data || responseData;
       setLastSaved(new Date());
       
-      // Update last saved data reference
-      lastSaveDataRef.current = JSON.stringify(savedTor);
-      
-      // ✅ FIX: Redirect to edit mode after first save to prevent duplicates
-      if (isCreatingNew) {
-        console.log(`✅ TOR created with ID ${savedTor.id}, redirecting to edit mode...`);
-        if (!isAutoSave) {
-          alertModal.showAlert('ToR created successfully! Redirecting...', 'success');
-        }
-        // Redirect to edit mode - this prevents duplicate creation on subsequent saves
-        router.push(`/tor/create?id=${savedTor.id}`);
-        return; // Exit early, page will reload in edit mode
-      }
-      
-      // Update form data with saved response (only for updates)
-      setFormData({
+      const savedFormData = {
         title: savedTor.title || "",
         description: savedTor.description || "",
         number: savedTor.number,
@@ -345,12 +355,32 @@ export default function TorFormLayout({
         penaltyRules: savedTor.penaltyRules || "",
         otherRequirements: savedTor.otherRequirements || "",
         ppnRate: savedTor.ppnRate ?? 11, // Default PPN to 11%
+        ppnIncluded: savedTor.ppnIncluded ?? true,
+        revisionTermOfReference: savedTor.revisionTermOfReference || "",
         approvalSignatures: savedTor.approvalSignatures || [],
         technicalParticulars: savedTor.technicalParticulars || [],
         inspectionTestingPlans: savedTor.inspectionTestingPlans || [],
         documentRequestSheets: savedTor.documentRequestSheets || [],
         performanceGuarantees: savedTor.performanceGuarantees || [],
-      });
+        attachments: savedTor.attachments || [],
+      };
+
+      // Update last saved data reference with exactly what we put in formData!
+      lastSaveDataRef.current = JSON.stringify(savedFormData);
+      
+      // ✅ FIX: Redirect to edit mode after first save to prevent duplicates
+      if (isCreatingNew) {
+        console.log(`✅ TOR created with ID ${savedTor.id}, redirecting to edit mode...`);
+        if (!isAutoSave) {
+          alertModal.showAlert('ToR created successfully! Redirecting...', 'success');
+        }
+        // Redirect to edit mode - this prevents duplicate creation on subsequent saves
+        router.push(`/tor/create?id=${savedTor.id}`);
+        return; // Exit early, page will reload in edit mode
+      }
+      
+      // Update form data with saved response (only for updates)
+      setFormData(savedFormData);
 
       setLastSaved(new Date());
       console.log('✅ ToR saved successfully at:', new Date().toISOString());
@@ -522,7 +552,7 @@ export default function TorFormLayout({
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-3xl font-semibold text-gray-900">
-            {torId ? "Edit TOR" : "Create New TOR"}
+            {isViewOnly ? "Detail TOR" : torId ? "Edit TOR" : "Create New TOR"}
           </h1>
           {/* Presence indicator — hanya tampil jika ada torId (mode edit) */}
           {torId && (
@@ -631,7 +661,7 @@ export default function TorFormLayout({
 
         {/* Tab Content */}
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm min-h-[500px]">
-          {activeTab !== "informasi-umum" && (
+          {activeTab !== "informasi-umum" && !isViewOnly && (
             <div className="flex justify-end p-4 pb-0">
               <button
                 onClick={async () => {
@@ -696,45 +726,55 @@ export default function TorFormLayout({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-between items-center">
-          <button
-            onClick={() => router.push("/tor")}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-          >
-            Cancel
-          </button>
+        {!isViewOnly && (
+          <div className="flex justify-between items-center mt-6">
+            <button
+              onClick={() => router.push("/tor")}
+              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
 
-          <div className="flex gap-3">
-            {tabEditingState[activeTab] && activeTab !== "informasi-umum" && (
-              <button
-                onClick={() => handleSave(false)}
-                disabled={isSaving}
-                className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50"
-              >
-                {isSaving ? "Saving..." : "Save Draft"}
-              </button>
-            )}
-            {activeTab === "informasi-umum" && (
-              <button
-                onClick={() => handleSave(false)}
-                disabled={isSaving}
-                className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50"
-              >
-                {isSaving ? "Saving..." : "Save Draft"}
-              </button>
-            )}
+            <div className="flex gap-3">
+              {tabEditingState[activeTab] && activeTab !== "informasi-umum" && (
+                <button
+                  onClick={() => handleSave(false)}
+                  disabled={isSaving}
+                  className={`px-6 py-2 rounded-lg text-white transition-all duration-200 disabled:opacity-50 ${
+                    hasUnsavedChanges
+                      ? "bg-green-600 hover:bg-green-700 shadow-md"
+                      : "bg-gray-600 hover:bg-gray-700"
+                  }`}
+                >
+                  {isSaving ? "Saving..." : "Save Draft"}
+                </button>
+              )}
+              {activeTab === "informasi-umum" && (
+                <button
+                  onClick={() => handleSave(false)}
+                  disabled={isSaving}
+                  className={`px-6 py-2 rounded-lg text-white transition-all duration-200 disabled:opacity-50 ${
+                    hasUnsavedChanges
+                      ? "bg-green-600 hover:bg-green-700 shadow-md"
+                      : "bg-gray-600 hover:bg-gray-700"
+                  }`}
+                >
+                  {isSaving ? "Saving..." : "Save Draft"}
+                </button>
+              )}
 
-            {torId && (formData.statusStage === "DRAFT" || formData.statusStage === "REVISE") && (
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {submitting ? "Submitting..." : "Submit for Approval"}
-              </button>
-            )}
+              {torId && (formData.statusStage === "DRAFT" || formData.statusStage === "REVISE") && (
+                <button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {submitting ? "Submitting..." : "Submit for Approval"}
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
       
       {/* Modals */}

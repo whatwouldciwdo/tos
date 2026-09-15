@@ -101,9 +101,11 @@ export interface TorFormData {
   penaltyRules?: string; // TiptapEditor HTML
   otherRequirements?: string; // TiptapEditor HTML
   riskAssessment?: string; // TiptapEditor HTML - Risk Assessment
+  revisionTermOfReference?: string;
   subtotal?: number;
   ppn?: number;
   ppnRate?: number; // PPN percentage (e.g., 11 for 11%)
+  ppnIncluded?: boolean;
   pph?: number;
   grandTotal?: number;
   
@@ -119,6 +121,7 @@ export interface TorFormData {
   inspectionTestingPlans?: InspectionTestingPlan[];
   documentRequestSheets?: DocumentRequestSheet[];
   performanceGuarantees?: PerformanceGuarantee[];
+  attachments?: TorAttachment[];
   
   // Budget Items
   budgetItems?: BudgetItem[];
@@ -127,6 +130,15 @@ export interface TorFormData {
   statusStage?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface TorAttachment {
+  id: string;
+  name: string;
+  url: string;
+  filename: string;
+  type: string;
+  size: number;
 }
 
 export interface BudgetItem {

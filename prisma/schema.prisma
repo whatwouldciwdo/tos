@@ -228,12 +228,15 @@ model Tor {
   penaltyRules          String?          @db.Text
   otherRequirements     String?          @db.Text
   riskAssessment        String?          @db.Text // Risk Assessment
+  revisionTermOfReference String?        @db.Text // Revisi Term of Reference
 
   // Budget (RAB)
   subtotal              Decimal?         @db.Decimal(15, 2)
   ppn                   Decimal?         @db.Decimal(15, 2)
   pph                   Decimal?         @db.Decimal(15, 2)
   grandTotal            Decimal?         @db.Decimal(15, 2)
+  ppnRate               Int?             @default(11)
+  ppnIncluded           Boolean          @default(true)
 
   // === TAB 5: LEMBAR PENGESAHAN ===
   approvalSignatures    Json?            // Array of ApprovalSignature {id, role, name, position, date}
@@ -243,6 +246,7 @@ model Tor {
   inspectionTestingPlans  Json?            // Inspection Testing Plan (ITP)
   documentRequestSheets   Json?            // Document Request Sheet (DRS)
   performanceGuarantees   Json?            // Performance Guarantee Requirement Sheet (PGRS)
+  attachments             Json?          // Uploaded Word/PDF/Excel attachments
 
   // Relations
   budgetItems           TorBudgetItem[]

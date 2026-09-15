@@ -16,7 +16,7 @@ start "TOR - Next.js Dev" cmd /k "npm run dev"
 
 echo.
 echo ✅ Development servers berjalan!
-echo    Next.js  : http://localhost:3000
+echo    Next.js  : http://localhost:3000 (atau http://IP_KOMPUTER:3000 dari komputer lain)
 echo    WebSocket: ws://localhost:3001
 echo.
 pause
