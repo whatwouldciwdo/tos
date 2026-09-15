@@ -6,12 +6,13 @@ services:
     container_name: tor-online-app
     restart: always
     ports:
-      - "3000:3000"
+      - "3120:3120"
     env_file:
       - .env
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3120
+
 
   ws:
     build:

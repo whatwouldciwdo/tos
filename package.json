@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -H 0.0.0.0",
+    "dev": "next dev -H 0.0.0.0 -p 3120",
     "build": "next build",
-    "start": "next start -H 0.0.0.0",
+    "start": "next start -H 0.0.0.0 -p 3120",
+
     "lint": "eslint",
     "db:seed-test": "node prisma/seed-test-users.cjs",
     "test:load": "node scripts/load-test.js",

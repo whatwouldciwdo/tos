@@ -14,7 +14,7 @@ const http = require('http');
 const https = require('https');
 
 // Configuration
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3120';
 const CONCURRENT_USERS = parseInt(process.env.CONCURRENT_USERS || '10');
 const SCENARIO = process.argv.find(arg => arg.startsWith('--scenario='))?.split('=')[1] || 'all';
 
