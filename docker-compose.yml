@@ -1,18 +1,26 @@
-version: "3.9"
-
 services:
-  postgres:
-    image: postgres:16
-    restart: unless-stopped
-    container_name: tor-postgres
-    environment:
-      POSTGRES_USER: tor_user
-      POSTGRES_PASSWORD: tor_password
-      POSTGRES_DB: tor_db
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tor-online-app
+    restart: always
     ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
 
-volumes:
-  postgres_data:
+  ws:
+    build:
+      context: .
+      dockerfile: Dockerfile.ws
+    container_name: tor-online-ws
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT_WS=3001
+      - HOST=0.0.0.0
