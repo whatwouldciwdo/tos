@@ -4,7 +4,8 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat
 
 COPY package.json package-lock.json ./
-RUN npm ci --only=production
+RUN npm install --omit=dev
+
 
 COPY ws-server.js ./
 

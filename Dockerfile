@@ -6,7 +6,8 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat openssl
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install
+
 
 # ─── Stage 2: Builder ────────────────────────────────────────────────────────
 FROM node:20-alpine AS builder
