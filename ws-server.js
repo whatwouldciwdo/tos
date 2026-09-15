@@ -2,7 +2,7 @@
  * TOR Online — WebSocket Collaboration Server
  * Menggunakan y-protocols untuk sinkronisasi Yjs CRDT antar browser.
  * Jalankan: node ws-server.js
- * Port default: 3001 (set env PORT_WS untuk mengubah)
+ * Port default: 3121 (set env PORT_WS untuk mengubah)
  */
 
 'use strict'
@@ -17,7 +17,8 @@ const decoding = require('lib0/decoding')
 const map = require('lib0/map')
 
 const HOST = process.env.HOST || '0.0.0.0'
-const PORT = parseInt(process.env.PORT_WS || '3001')
+const PORT = parseInt(process.env.PORT_WS || '3121')
+
 
 // Konstanta tipe pesan (sesuai y-protocols)
 const messageSync = 0

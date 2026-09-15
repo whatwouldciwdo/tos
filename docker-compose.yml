@@ -21,7 +21,8 @@ services:
     container_name: tor-online-ws
     restart: always
     ports:
-      - "3001:3001"
+      - "3121:3121"
     environment:
-      - PORT_WS=3001
+      - PORT_WS=3121
       - HOST=0.0.0.0
+

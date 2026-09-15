@@ -65,7 +65,8 @@ export function useCollaboration(
     // URL WebSocket server — bisa dikonfigurasi via env
     const wsUrl =
       process.env.NEXT_PUBLIC_WS_URL ||
-      `ws://${typeof window !== "undefined" ? window.location.hostname : "localhost"}:3001`;
+      `ws://${typeof window !== "undefined" ? window.location.hostname : "localhost"}:3121`;
+
 
     const provider = new WebsocketProvider(wsUrl, `tor-${torId}`, ydoc, {
       connect: true,

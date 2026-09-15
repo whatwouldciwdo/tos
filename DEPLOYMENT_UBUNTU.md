@@ -93,18 +93,18 @@ docker compose ps
 
 Container yang akan berjalan:
 1. `tor-online-app` — Next.js Application (Port `3120`)
-2. `tor-online-ws` — WebSocket Collaboration Server (Port `3001`)
+2. `tor-online-ws` — WebSocket Collaboration Server (Port `3121`)
 
 ---
 
 ## 🔒 5. Konfigurasi Firewall Ubuntu (UFW)
 
-Buka port `3120` (Web App) dan `3001` (WebSocket Server) pada firewall Ubuntu agar dapat diakses dari jaringan lokal:
+Buka port `3120` (Web App) dan `3121` (WebSocket Server) pada firewall Ubuntu agar dapat diakses dari jaringan lokal:
 
 ```bash
-# Buka port 3120 dan 3001
+# Buka port 3120 dan 3121
 sudo ufw allow 3120/tcp comment 'TOR Online Web App'
-sudo ufw allow 3001/tcp comment 'TOR Online WebSocket Collaboration'
+sudo ufw allow 3121/tcp comment 'TOR Online WebSocket Collaboration'
 
 # Cek status firewall
 sudo ufw status verbose
@@ -147,5 +147,5 @@ docker compose down
 
 ## ✅ 7. Akses Aplikasi
 - **Web App**: `http://10.8.140.67:3120`
-- **WebSocket Server**: `ws://<IP_SERVER_UBUNTU>:3001`
-- **Health Check WebSocket**: `http://<IP_SERVER_UBUNTU>:3001`
+- **WebSocket Server**: `ws://10.8.140.67:3121`
+- **Health Check WebSocket**: `http://10.8.140.67:3121`
