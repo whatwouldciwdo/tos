@@ -97,6 +97,7 @@ model User {
 
   createdTors       Tor[]               @relation("TorCreator")
   approvalHistories TorApprovalHistory[] @relation("HistoryActor")
+  loginLogs         LoginLog[]
 
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
@@ -334,3 +335,23 @@ model LampiranTemplate {
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
 }
+
+// 11. LoginLog (Audit Log Login)
+model LoginLog {
+  id          Int       @id @default(autoincrement())
+  userId      Int?
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  username    String
+  name        String?
+  status      String    // "SUCCESS" | "FAILED"
+  ipAddress   String?
+  userAgent   String?
+  failReason  String?
+  createdAt   DateTime  @default(now())
+
+  @@index([createdAt])
+  @@index([username])
+  @@index([status])
+  @@index([userId])
+}
+

@@ -1,6 +1,7 @@
 // src/app/(main)/admin/page.tsx
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { Shield, UserPlus } from "lucide-react";
 
 export default async function AdminPage() {
   const users = await prisma.user.findMany({
@@ -24,12 +25,19 @@ export default async function AdminPage() {
           <div>
             <h1 className="text-3xl font-semibold">Super Admin Panel</h1>
             <p className="text-sm text-gray-300">
-              Kelola akun, jabatan, bidang, dan hak akses pengguna.
+              Kelola akun, jabatan, bidang, hak akses pengguna, dan audit log sistem.
             </p>
           </div>
 
           <div className="flex flex-col items-end gap-2">
-            <div className="flex flex-wrap justify-end gap-3 text-xs">
+            <div className="flex flex-wrap justify-end items-center gap-3 text-xs">
+              <Link
+                href="/admin/logs"
+                className="rounded-full bg-[#42ff6b]/20 border border-[#42ff6b] px-3.5 py-1.5 text-xs text-[#42ff6b] hover:bg-[#42ff6b] hover:text-black font-semibold transition flex items-center gap-1.5 shadow-sm"
+              >
+                <Shield className="w-3.5 h-3.5" />
+                Audit Log Login
+              </Link>
               <Link
                 href="/admin/bidang"
                 className="text-[#42ff6b] hover:underline"
@@ -46,13 +54,14 @@ export default async function AdminPage() {
 
             <div className="flex items-center gap-3">
               <span className="text-xs text-gray-400">
-                Untuk saat ini: daftar user + buat/edit user.
+                Kelola akun & hak akses pengguna.
               </span>
               <Link
                 href="/admin/users/new"
-                className="rounded-full bg-[#42ff6b] px-4 py-2 text-xs font-semibold text-black hover:bg-[#39e05d] transition"
+                className="rounded-full bg-[#42ff6b] px-4 py-2 text-xs font-semibold text-black hover:bg-[#39e05d] transition flex items-center gap-1.5"
               >
-                + Tambah User
+                <UserPlus className="w-3.5 h-3.5" />
+                Tambah User
               </Link>
             </div>
           </div>
@@ -60,7 +69,7 @@ export default async function AdminPage() {
 
         <section className="bg-[#1f1f1f] border border-[#42ff6b]/40 rounded-2xl p-4 md:p-6 shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Daftar User</h2>
+            <h2 className="text-lg font-semibold">Daftar Akun Pengguna</h2>
             <span className="text-xs text-gray-400">
               Total: {users.length} user
             </span>
@@ -72,6 +81,7 @@ export default async function AdminPage() {
                 <tr className="border-b border-[#42ff6b]/40 text-xs uppercase text-gray-300">
                   <th className="py-2 pr-4 text-left">ID</th>
                   <th className="py-2 pr-4 text-left">Nama</th>
+                  <th className="py-2 pr-4 text-left">Username (Login)</th>
                   <th className="py-2 pr-4 text-left">Email</th>
                   <th className="py-2 pr-4 text-left">Jabatan</th>
                   <th className="py-2 pr-4 text-left">Bidang</th>
@@ -99,6 +109,15 @@ export default async function AdminPage() {
                         <div className="text-xs text-gray-400">
                           {user.isActive ? "Active" : "Inactive"}
                         </div>
+                      </td>
+                      <td className="py-2 pr-4 align-top">
+                        {user.username ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-xs font-semibold bg-[#42ff6b]/10 text-[#42ff6b] border border-[#42ff6b]/30">
+                            @{user.username}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-500 italic">- belum diset -</span>
+                        )}
                       </td>
                       <td className="py-2 pr-4 align-top text-xs text-gray-200">
                         {user.email}
@@ -149,7 +168,7 @@ export default async function AdminPage() {
                 {users.length === 0 && (
                   <tr>
                     <td
-                      colSpan={8}
+                      colSpan={9}
                       className="py-6 text-center text-sm text-gray-400"
                     >
                       Belum ada user terdaftar.
