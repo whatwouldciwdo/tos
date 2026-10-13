@@ -46,9 +46,10 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
   const bidangName = dbUser.position.bidang?.name || "Unknown";
   const creatorName = dbUser.name;
 
-  // Check if user has EXPORT role
+  // Check if user has SUPER_ADMIN or EXPORT role
   const userRoles = dbUser.position.positionRoles.map(pr => pr.role.name);
-  const hasExportRole = dbUser.isSuperAdmin || userRoles.includes("EXPORT");
+  const isSuperAdmin = Boolean(dbUser.isSuperAdmin || userRoles.includes("SUPER_ADMIN"));
+  const hasExportRole = isSuperAdmin || userRoles.includes("EXPORT");
 
   // If editing existing ToR
   if (params?.id) {
@@ -73,13 +74,13 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
     }
 
     // Check access
-    if (tor.creatorUserId !== user.id && !dbUser.isSuperAdmin) {
+    if (tor.creatorUserId !== user.id && !isSuperAdmin) {
       redirect("/tor");
     }
 
     // Check if can edit
     const canEdit = tor.statusStage === "DRAFT" || tor.statusStage === "REVISE";
-    if (!canEdit && !dbUser.isSuperAdmin) {
+    if (!canEdit && !isSuperAdmin) {
       // Redirect to view mode
       redirect(`/tor/${torId}`);
     }
@@ -120,16 +121,17 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
         unitPrice: Number(item.unitPrice),
         totalPrice: Number(item.totalPrice),
       })),
+      fieldComments: (tor as any).fieldComments || [],
     } as any as TorFormData;
 
     return (
       <div className="min-h-screen flex bg-[#262626]">
         <Sidebar
           userName={dbUser.name}
-          isSuperAdmin={dbUser.isSuperAdmin || false}
+          isSuperAdmin={isSuperAdmin}
           canCreate={true}
         />
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <TorFormLayout
             torId={torId}
             initialData={initialData}
@@ -139,6 +141,10 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
             creatorPosition={tor.creator?.position?.name || dbUser.position.name}
             hasExportRole={hasExportRole}
             currentUserName={dbUser.name}
+            currentUserId={dbUser.id}
+            isCreator={tor.creatorUserId === user.id}
+            isSuperAdmin={isSuperAdmin}
+            canComment={false}
           />
         </div>
       </div>
@@ -150,10 +156,10 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
     <div className="min-h-screen flex bg-[#262626]">
       <Sidebar
         userName={dbUser.name}
-        isSuperAdmin={dbUser.isSuperAdmin || false}
+        isSuperAdmin={isSuperAdmin}
         canCreate={true}
       />
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <TorFormLayout
           bidangId={bidangId}
           bidangName={bidangName}
@@ -161,6 +167,10 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
           creatorPosition={dbUser.position.name}
           hasExportRole={hasExportRole}
           currentUserName={creatorName}
+          currentUserId={dbUser.id}
+          isCreator={true}
+          isSuperAdmin={isSuperAdmin}
+          canComment={false}
         />
       </div>
     </div>

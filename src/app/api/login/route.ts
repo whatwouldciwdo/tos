@@ -136,6 +136,10 @@ export async function POST(req: NextRequest) {
       userAgent,
     });
 
+    const hasSuperAdminRole = user.position?.positionRoles?.some(
+      (pr) => pr.role?.name === "SUPER_ADMIN"
+    );
+
     // Buat token (keep email for notifications)
     const token = jwt.sign(
       {
@@ -144,7 +148,7 @@ export async function POST(req: NextRequest) {
         email: user.email,
         name: user.name,
         positionId: user.positionId,
-        isSuperAdmin: user.isSuperAdmin,
+        isSuperAdmin: Boolean(user.isSuperAdmin || hasSuperAdminRole),
       },
       JWT_SECRET,
       { expiresIn: "1d" } // 1 hari

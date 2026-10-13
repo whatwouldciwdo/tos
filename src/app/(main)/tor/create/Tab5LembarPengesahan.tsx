@@ -1,6 +1,7 @@
 "use client";
 
 import { TabProps, ApprovalSignature } from "./types";
+import { FieldWithComment } from "./components/FieldCommentWrapper";
 import { Plus, Trash2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
@@ -243,132 +244,138 @@ export default function Tab5LembarPengesahan({
       )}
 
       {/* Approval Signatures Form */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-gray-900">Penandatangan</h3>
-          <div className="flex gap-2">
-            {workflowSteps.length > 0 && (
-              <button
-                type="button"
-                onClick={handleRefreshFromWorkflow}
-                className="flex items-center gap-1 px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition"
-                title="Refresh dari workflow"
+      <FieldWithComment
+        fieldKey="approvalSignatures"
+        fieldLabel="Penandatangan (Lembar Pengesahan)"
+        alignButton="top"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-gray-900">Penandatangan</h3>
+            <div className="flex gap-2">
+              {workflowSteps.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleRefreshFromWorkflow}
+                  className="flex items-center gap-1 px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition"
+                  title="Refresh dari workflow"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                  </svg>
+                  Refresh dari Workflow
+                </button>
+              )}
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={addSignature}
+                  className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                >
+                  <Plus size={14} />
+                  Tambah Penandatangan
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {signatures.map((signature, index) => (
+              <div
+                key={signature.id}
+                className="border border-gray-300 rounded-lg p-4 bg-white"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                </svg>
-                Refresh dari Workflow
-              </button>
-            )}
-            {isEditing && (
-              <button
-                type="button"
-                onClick={addSignature}
-                className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-              >
-                <Plus size={14} />
-                Tambah Penandatangan
-              </button>
+                <div className="flex items-start justify-between mb-3">
+                  <h4 className="font-medium text-gray-900">{signature.role || `Penandatangan ${index + 1}`}</h4>
+                  {isEditing && signatures.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeSignature(signature.id)}
+                      className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition"
+                      title="Hapus"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Role */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Peran <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={signature.role}
+                      onChange={(e) => updateSignature(signature.id, "role", e.target.value)}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    >
+                      <option value="Dibuat oleh">Dibuat oleh</option>
+                      <option value="Diperiksa oleh">Diperiksa oleh</option>
+                      <option value="Disetujui oleh">Disetujui oleh</option>
+                    </select>
+                  </div>
+
+                  {/* Date */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Tanggal
+                    </label>
+                    <input
+                      type="date"
+                      value={signature.date}
+                      onChange={(e) => updateSignature(signature.id, "date", e.target.value)}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    />
+                  </div>
+
+                  {/* Position */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Jabatan <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={signature.position}
+                      onChange={(e) => updateSignature(signature.id, "position", e.target.value)}
+                      placeholder="Contoh: Senior Officer Enjiniring BOP"
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    />
+                  </div>
+
+                  {/* Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nama <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={signature.name}
+                      onChange={(e) => updateSignature(signature.id, "name", e.target.value)}
+                      placeholder="Nama lengkap"
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {signatures.length === 0 && (
+              <div className="text-sm text-gray-500 italic py-8 text-center border border-dashed border-gray-300 rounded-lg">
+                {isLoadingWorkflow
+                  ? "Memuat data workflow..."
+                  : isEditing
+                  ? "Klik tombol 'Tambah Penandatangan' untuk menambahkan data penandatangan"
+                  : "Belum ada data penandatangan"}
+              </div>
             )}
           </div>
         </div>
-
-        <div className="space-y-4">
-          {signatures.map((signature, index) => (
-            <div
-              key={signature.id}
-              className="border border-gray-300 rounded-lg p-4 bg-white"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <h4 className="font-medium text-gray-900">{signature.role || `Penandatangan ${index + 1}`}</h4>
-                {isEditing && signatures.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeSignature(signature.id)}
-                    className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition"
-                    title="Hapus"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Role */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Peran <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={signature.role}
-                    onChange={(e) => updateSignature(signature.id, "role", e.target.value)}
-                    disabled={!isEditing}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
-                  >
-                    <option value="Dibuat oleh">Dibuat oleh</option>
-                    <option value="Diperiksa oleh">Diperiksa oleh</option>
-                    <option value="Disetujui oleh">Disetujui oleh</option>
-                  </select>
-                </div>
-
-                {/* Date */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tanggal
-                  </label>
-                  <input
-                    type="date"
-                    value={signature.date}
-                    onChange={(e) => updateSignature(signature.id, "date", e.target.value)}
-                    disabled={!isEditing}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
-                  />
-                </div>
-
-                {/* Position */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Jabatan <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={signature.position}
-                    onChange={(e) => updateSignature(signature.id, "position", e.target.value)}
-                    placeholder="Contoh: Senior Officer Enjiniring BOP"
-                    disabled={!isEditing}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
-                  />
-                </div>
-
-                {/* Name */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nama <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={signature.name}
-                    onChange={(e) => updateSignature(signature.id, "name", e.target.value)}
-                    placeholder="Nama lengkap"
-                    disabled={!isEditing}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {signatures.length === 0 && (
-            <div className="text-sm text-gray-500 italic py-8 text-center border border-dashed border-gray-300 rounded-lg">
-              {isLoadingWorkflow
-                ? "Memuat data workflow..."
-                : isEditing
-                ? "Klik tombol 'Tambah Penandatangan' untuk menambahkan data penandatangan"
-                : "Belum ada data penandatangan"}
-            </div>
-          )}
-        </div>
-      </div>
+      </FieldWithComment>
 
       {/* Preview Info */}
       {!isEditing && signatures.length > 0 && (

@@ -248,6 +248,7 @@ model Tor {
   documentRequestSheets   Json?            // Document Request Sheet (DRS)
   performanceGuarantees   Json?            // Performance Guarantee Requirement Sheet (PGRS)
   attachments             Json?          // Uploaded Word/PDF/Excel attachments
+  fieldComments           Json?          // Per-field comments / revision notes from approvers
 
   // Relations
   budgetItems           TorBudgetItem[]

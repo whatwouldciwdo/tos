@@ -3,14 +3,15 @@
 import { saveAs } from "file-saver";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { TorFormData, TabId } from "./types";
+import { TorFormData, TabId, TorFieldComment } from "./types";
 import Tab1InformasiUmum from "./Tab1InformasiUmum";
 import Tab2Pendahuluan from "./Tab2Pendahuluan";
 import Tab3TahapanPekerjaan from "./Tab3TahapanPekerjaan";
 import Tab4Usulan from "./Tab4Usulan";
 import Tab5LembarPengesahan from "./Tab5LembarPengesahan";
 import Tab6Lampiran from "./Tab6Lampiran";
-import { Edit, X } from "lucide-react";
+import { FieldCommentProvider } from "./components/FieldCommentWrapper";
+import { Edit, X, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import { AlertModal, ConfirmModal } from "@/components/Modal";
 import { useAlertModal, useConfirmModal } from "@/hooks/useModal";
 import { useCollaboration } from "@/hooks/useCollaboration";
@@ -28,6 +29,11 @@ interface TorFormLayoutProps {
   hasExportRole?: boolean;
   // NEW: Info pengguna yang sedang login (untuk fitur kolaborasi)
   currentUserName?: string;
+  // NEW: Props untuk fitur komentar / revisi per field
+  canComment?: boolean;
+  currentUserId?: number;
+  isCreator?: boolean;
+  isSuperAdmin?: boolean;
 }
 
 export default function TorFormLayout({
@@ -40,9 +46,14 @@ export default function TorFormLayout({
   isViewOnly = false,
   hasExportRole = false,
   currentUserName = "Pengguna",
+  canComment = false,
+  currentUserId,
+  isCreator = false,
+  isSuperAdmin = false,
 }: TorFormLayoutProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>("informasi-umum");
+  const [showCommentsSummary, setShowCommentsSummary] = useState(true);
 
   // Refs for auto-save and date initialization
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -119,6 +130,7 @@ export default function TorFormLayout({
     documentRequestSheets: initialData?.documentRequestSheets || [],
     performanceGuarantees: initialData?.performanceGuarantees || [],
     attachments: initialData?.attachments || [],
+    fieldComments: Array.isArray(initialData?.fieldComments) ? initialData.fieldComments : [],
     statusStage: initialData?.statusStage,
   });
 
@@ -263,6 +275,7 @@ export default function TorFormLayout({
         documentRequestSheets: freshData.documentRequestSheets || [],
         performanceGuarantees: freshData.performanceGuarantees || [],
         attachments: freshData.attachments || [],
+        fieldComments: Array.isArray(freshData.fieldComments) ? freshData.fieldComments : [],
       };
 
       setFormData(reloadedFormData);
@@ -363,6 +376,9 @@ export default function TorFormLayout({
         documentRequestSheets: savedTor.documentRequestSheets || [],
         performanceGuarantees: savedTor.performanceGuarantees || [],
         attachments: savedTor.attachments || [],
+        fieldComments: Array.isArray(savedTor.fieldComments)
+          ? savedTor.fieldComments
+          : formData.fieldComments || [],
       };
 
       // Update last saved data reference with exactly what we put in formData!
@@ -479,7 +495,140 @@ export default function TorFormLayout({
     { id: "lampiran" as TabId, label: "Lampiran", component: Tab6Lampiran },
   ];
 
-  const ActiveTabComponent = tabs.find((t) => t.id === activeTab)?.component;
+  const activeTabInfo = tabs.find((t) => t.id === activeTab);
+  const ActiveTabComponent = activeTabInfo?.component;
+  const activeTabLabel = activeTabInfo?.label || "Informasi Umum";
+
+  const fieldComments: TorFieldComment[] = useMemo(
+    () => (Array.isArray(formData.fieldComments) ? formData.fieldComments : []),
+    [formData.fieldComments]
+  );
+
+  // Sync fieldComments to TorDetailClient via custom browser event
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("tor-field-comments-updated", { detail: fieldComments })
+      );
+    }
+  }, [fieldComments]);
+
+  const applyUpdatedFieldComments = useCallback(
+    (updated: TorFieldComment[]) => {
+      setFormData((prev) => {
+        const next = { ...prev, fieldComments: updated };
+        lastSaveDataRef.current = JSON.stringify(next);
+        return next;
+      });
+      syncField("fieldComments", updated);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("tor-field-comments-updated", { detail: updated })
+        );
+      }
+    },
+    [syncField]
+  );
+
+  const handleAddFieldComment = useCallback(
+    async (fieldKey: string, fieldLabel: string, commentText: string) => {
+      if (!torId) throw new Error("TOR belum disimpan");
+      const res = await fetch(`/api/tor/${torId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fieldKey,
+          fieldLabel,
+          tabId: activeTab,
+          tabLabel: activeTabLabel,
+          comment: commentText,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Gagal menyimpan komentar");
+      }
+      if (Array.isArray(data.fieldComments)) {
+        applyUpdatedFieldComments(data.fieldComments);
+      }
+    },
+    [torId, activeTab, activeTabLabel, applyUpdatedFieldComments]
+  );
+
+  const handleUpdateFieldComment = useCallback(
+    async (commentId: string, commentText: string) => {
+      if (!torId) return;
+      const res = await fetch(`/api/tor/${torId}/comments`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commentId, comment: commentText }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Gagal memperbarui komentar");
+      }
+      if (Array.isArray(data.fieldComments)) {
+        applyUpdatedFieldComments(data.fieldComments);
+      }
+    },
+    [torId, applyUpdatedFieldComments]
+  );
+
+  const handleDeleteFieldComment = useCallback(
+    async (commentId: string) => {
+      if (!torId) return;
+      const res = await fetch(
+        `/api/tor/${torId}/comments?commentId=${encodeURIComponent(commentId)}`,
+        { method: "DELETE" }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Gagal menghapus komentar");
+      }
+      if (Array.isArray(data.fieldComments)) {
+        applyUpdatedFieldComments(data.fieldComments);
+      }
+    },
+    [torId, applyUpdatedFieldComments]
+  );
+
+  const handleToggleResolveFieldComment = useCallback(
+    async (commentId: string, resolved: boolean) => {
+      if (!torId) return;
+      const res = await fetch(`/api/tor/${torId}/comments`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commentId, resolved }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Gagal memperbarui status revisi");
+      }
+      if (Array.isArray(data.fieldComments)) {
+        applyUpdatedFieldComments(data.fieldComments);
+      }
+    },
+    [torId, applyUpdatedFieldComments]
+  );
+
+  const jumpToFieldComment = useCallback(
+    async (comment: TorFieldComment) => {
+      if (comment.tabId && comment.tabId !== activeTab) {
+        setActiveTab(comment.tabId as TabId);
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+      const el = document.getElementById(`field-${comment.fieldKey}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    },
+    [activeTab]
+  );
+
+  const unresolvedComments = useMemo(
+    () => fieldComments.filter((c) => !c.resolved),
+    [fieldComments]
+  );
 
   const formatCurrency = (amount?: number, currency?: string) => {
     if (!amount) return `${currency || "IDR"} 0`;
@@ -627,36 +776,137 @@ export default function TorFormLayout({
           )}
         </div>
 
+        {/* Field Comments / Revision Summary Banner */}
+        {(fieldComments.length > 0 || canComment) && (
+          <div className="bg-amber-50/90 border border-amber-300 rounded-lg p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <MessageSquare size={18} className="text-amber-600 shrink-0" />
+                <div>
+                  <h3 className="text-sm font-semibold text-amber-950">
+                    Komentar & Catatan Revisi per Field{" "}
+                    {fieldComments.length > 0 && (
+                      <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-200 text-amber-900">
+                        {unresolvedComments.length} perlu revisi / {fieldComments.length} total
+                      </span>
+                    )}
+                  </h3>
+                  <p className="text-xs text-amber-800 mt-0.5">
+                    {canComment
+                      ? "Klik tombol (+) di sebelah kanan setiap field untuk menambahkan komentar atau catatan revisi. Semua komentar akan terangkum otomatis saat Anda menekan tombol Revisi."
+                      : "Klik pada daftar komentar di bawah untuk langsung menuju ke field yang perlu direvisi."}
+                  </p>
+                </div>
+              </div>
+
+              {fieldComments.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowCommentsSummary((prev) => !prev)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-amber-900 bg-white/80 hover:bg-white border border-amber-300 rounded-md shrink-0"
+                >
+                  {showCommentsSummary ? (
+                    <>
+                      Sembunyikan <ChevronUp size={14} />
+                    </>
+                  ) : (
+                    <>
+                      Lihat Daftar ({fieldComments.length}) <ChevronDown size={14} />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {showCommentsSummary && fieldComments.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-amber-200 grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+                {fieldComments.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => jumpToFieldComment(item)}
+                    className={`text-left p-2.5 rounded-md border transition flex flex-col gap-1 ${
+                      item.resolved
+                        ? "bg-emerald-50/80 border-emerald-200 hover:bg-emerald-100/70"
+                        : "bg-white border-amber-300 hover:bg-amber-100/50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-semibold text-gray-900 truncate">
+                        [{item.tabLabel}] {item.fieldLabel}
+                      </span>
+                      <span
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${
+                          item.resolved
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-amber-100 text-amber-900"
+                        }`}
+                      >
+                        {item.resolved ? "✓ Selesai" : "Perlu Revisi"}
+                      </span>
+                    </div>
+                    <p
+                      className={`text-xs line-clamp-2 ${
+                        item.resolved ? "line-through text-gray-500" : "text-gray-700"
+                      }`}
+                    >
+                      {item.comment}
+                    </p>
+                    <span className="text-[10px] text-gray-400">
+                      Oleh {item.authorName}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Tab Navigation */}
         <div className="flex gap-2 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={async () => {
-                if (isChangingTab) return;
-                setIsChangingTab(true);
-                // Small delay for better UX
-                await new Promise(resolve => setTimeout(resolve, 200));
-                setActiveTab(tab.id);
-                setIsChangingTab(false);
-              }}
-              disabled={isChangingTab}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition disabled:opacity-50 disabled:cursor-not-allowed ${
-                activeTab === tab.id
-                  ? "bg-gray-900 text-white"
-                  : "bg-blue-100 text-blue-700 hover:bg-blue-200"
-              }`}
-            >
-              {isChangingTab ? (
-                <span className="inline-flex items-center gap-1">
-                  <span className="animate-spin">⟳</span>
-                  {tab.label}
-                </span>
-              ) : (
-                tab.label
-              )}
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const tabComments = fieldComments.filter((c) => c.tabId === tab.id);
+            const tabUnresolved = tabComments.filter((c) => !c.resolved).length;
+            return (
+              <button
+                key={tab.id}
+                onClick={async () => {
+                  if (isChangingTab) return;
+                  setIsChangingTab(true);
+                  // Small delay for better UX
+                  await new Promise(resolve => setTimeout(resolve, 200));
+                  setActiveTab(tab.id);
+                  setIsChangingTab(false);
+                }}
+                disabled={isChangingTab}
+                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 ${
+                  activeTab === tab.id
+                    ? "bg-gray-900 text-white"
+                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                }`}
+              >
+                {isChangingTab ? (
+                  <span className="inline-flex items-center gap-1">
+                    <span className="animate-spin">⟳</span>
+                    {tab.label}
+                  </span>
+                ) : (
+                  tab.label
+                )}
+                {tabComments.length > 0 && (
+                  <span
+                    className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold ${
+                      tabUnresolved > 0
+                        ? "bg-amber-500 text-white"
+                        : "bg-emerald-500 text-white"
+                    }`}
+                  >
+                    {tabUnresolved > 0 ? tabUnresolved : tabComments.length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Tab Content */}
@@ -707,21 +957,37 @@ export default function TorFormLayout({
           )}
           
           <div className="p-6">
-            {ActiveTabComponent && (
-              <ActiveTabComponent 
-                formData={formData} 
-                onChange={handleChange} 
-                isEditing={tabEditingState[activeTab]}
-                torId={torId}
-                bidangId={formData.bidangId}
-                creatorName={creatorName}
-                creatorPosition={creatorPosition}
-                // Teruskan props kolaborasi ke semua tab
-                ydoc={ydoc}
-                awarenessProvider={provider}
-                collabUser={{ name: currentUserName, color: userColor }}
-              />
-            )}
+            <FieldCommentProvider
+              value={{
+                canComment,
+                isCreator,
+                isSuperAdmin,
+                currentUserId,
+                activeTab,
+                activeTabLabel,
+                comments: fieldComments,
+                addComment: handleAddFieldComment,
+                updateComment: handleUpdateFieldComment,
+                deleteComment: handleDeleteFieldComment,
+                toggleResolveComment: handleToggleResolveFieldComment,
+              }}
+            >
+              {ActiveTabComponent && (
+                <ActiveTabComponent 
+                  formData={formData} 
+                  onChange={handleChange} 
+                  isEditing={tabEditingState[activeTab]}
+                  torId={torId}
+                  bidangId={formData.bidangId}
+                  creatorName={creatorName}
+                  creatorPosition={creatorPosition}
+                  // Teruskan props kolaborasi ke semua tab
+                  ydoc={ydoc}
+                  awarenessProvider={provider}
+                  collabUser={{ name: currentUserName, color: userColor }}
+                />
+              )}
+            </FieldCommentProvider>
           </div>
         </div>
 

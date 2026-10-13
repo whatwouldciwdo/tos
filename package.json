@@ -52,6 +52,7 @@
     "react-spreadsheet": "^0.10.1",
     "scheduler": "^0.27.0",
     "uuid": "^13.0.0",
+    "ws": "^8.21.0",
     "y-websocket": "^3.0.0",
     "yjs": "^13.6.31"
   },
@@ -69,7 +70,6 @@
     "eslint-config-next": "16.0.3",
     "prisma": "^6.19.0",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "ws": "^8.21.0"
+    "typescript": "^5"
   }
 }

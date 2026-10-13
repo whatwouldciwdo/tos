@@ -31,7 +31,16 @@ export async function getCurrentUser() {
   const user = await prisma.user.findUnique({
     where: { id: decoded.sub },
     include: {
-      position: true,
+      position: {
+        include: {
+          bidang: true,
+          positionRoles: {
+            include: {
+              role: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -39,5 +48,12 @@ export async function getCurrentUser() {
     throw new Error("User tidak ditemukan");
   }
 
-  return user;
+  const hasSuperAdminRole = user.position?.positionRoles?.some(
+    (pr) => pr.role?.name === "SUPER_ADMIN"
+  );
+
+  return {
+    ...user,
+    isSuperAdmin: Boolean(user.isSuperAdmin || hasSuperAdminRole),
+  };
 }

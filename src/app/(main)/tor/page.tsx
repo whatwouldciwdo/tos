@@ -37,12 +37,20 @@ export default async function TorListPage({ searchParams }: PageProps) {
               name: true,
             },
           },
+          positionRoles: {
+            include: {
+              role: true,
+            },
+          },
         },
       },
     },
   });
 
-  const isSuperAdmin = dbUser?.isSuperAdmin ?? false;
+  const hasSuperAdminRole = dbUser?.position?.positionRoles?.some(
+    (pr) => pr.role?.name === "SUPER_ADMIN"
+  );
+  const isSuperAdmin = Boolean(dbUser?.isSuperAdmin || hasSuperAdminRole);
   const userName = dbUser?.name || "User";
   const positionName = dbUser?.position?.name || "-";
   const bidangName = dbUser?.position?.bidang?.name || "-";
@@ -208,7 +216,7 @@ export default async function TorListPage({ searchParams }: PageProps) {
       />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col px-10 md:px-24 py-10 pl-32 ml-24">
+      <main className="flex-1 min-w-0 flex flex-col px-8 md:px-16 py-10 transition-all duration-300">
         {/* Welcome Header */}
         <div className="flex justify-between items-start mb-8">
           <div className="space-y-4">

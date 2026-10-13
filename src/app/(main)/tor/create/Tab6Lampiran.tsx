@@ -1,6 +1,7 @@
 "use client";
 
 import { TabProps, TechnicalParticular, InspectionTestingPlan, DocumentRequestSheet, PerformanceGuarantee, ColumnConfig, TorAttachment } from "./types";
+import { FieldWithComment } from "./components/FieldCommentWrapper";
 import { v4 as uuidv4 } from "uuid";
 import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
@@ -373,16 +374,22 @@ export default function Tab6Lampiran({ formData, onChange, isEditing }: TabProps
         Lampiran
       </h2>
 
-      <section className="rounded-lg border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-800">Upload File Lampiran</h3>
-        {isEditing && <input type="file" accept=".doc,.docx,.pdf,.xls,.xlsx,application/pdf,application/msword,application/vnd.ms-excel" onChange={handleAttachmentUpload} disabled={uploadingAttachment} className="mt-3 block w-full text-sm" />}
-        <p className="mt-1 text-xs text-gray-500">Format Word, PDF, Excel (maks. 25MB). Approver dapat mengunduh file dari daftar di bawah.</p>
-        {uploadingAttachment && <p className="text-sm text-blue-600">Mengupload...</p>}
-        {attachmentError && <p className="text-sm text-red-600">{attachmentError}</p>}
-        <ul className="mt-3 space-y-2">
-          {(formData.attachments || []).map((attachment) => <li key={attachment.id} className="flex items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm"><a href={`/${attachment.url}`} download={attachment.name} className="text-blue-600 hover:underline">Unduh {attachment.name}</a>{isEditing && <button type="button" onClick={() => removeAttachment(attachment.id)} className="text-red-600" aria-label={`Hapus ${attachment.name}`}><Trash2 size={15} /></button>}</li>)}
-        </ul>
-      </section>
+      <FieldWithComment
+        fieldKey="attachments"
+        fieldLabel="Upload File Lampiran"
+        alignButton="top"
+      >
+        <section className="rounded-lg border border-gray-200 p-4">
+          <h3 className="font-semibold text-gray-800">Upload File Lampiran</h3>
+          {isEditing && <input type="file" accept=".doc,.docx,.pdf,.xls,.xlsx,application/pdf,application/msword,application/vnd.ms-excel" onChange={handleAttachmentUpload} disabled={uploadingAttachment} className="mt-3 block w-full text-sm" />}
+          <p className="mt-1 text-xs text-gray-500">Format Word, PDF, Excel (maks. 25MB). Approver dapat mengunduh file dari daftar di bawah.</p>
+          {uploadingAttachment && <p className="text-sm text-blue-600">Mengupload...</p>}
+          {attachmentError && <p className="text-sm text-red-600">{attachmentError}</p>}
+          <ul className="mt-3 space-y-2">
+            {(formData.attachments || []).map((attachment) => <li key={attachment.id} className="flex items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm"><a href={`/${attachment.url}`} download={attachment.name} className="text-blue-600 hover:underline">Unduh {attachment.name}</a>{isEditing && <button type="button" onClick={() => removeAttachment(attachment.id)} className="text-red-600" aria-label={`Hapus ${attachment.name}`}><Trash2 size={15} /></button>}</li>)}
+          </ul>
+        </section>
+      </FieldWithComment>
 
       {/* Template Selection Dropdown */}
       {isEditing && templates.length > 0 && (
@@ -426,6 +433,11 @@ export default function Tab6Lampiran({ formData, onChange, isEditing }: TabProps
       />
 
       {/* 1. Technical Particular & Guarantee (TPG) */}
+      <FieldWithComment
+        fieldKey="technicalParticulars"
+        fieldLabel="1. Technical Particular & Guarantee (TPG)"
+        alignButton="top"
+      >
       <div className="space-y-4">
         <div 
           className="flex justify-between items-center cursor-pointer bg-gray-50 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors" 
@@ -1023,8 +1035,14 @@ export default function Tab6Lampiran({ formData, onChange, isEditing }: TabProps
         </div>
         )}
       </div>
+      </FieldWithComment>
 
       {/* 2. Inspection Testing Plan (ITP) */}
+      <FieldWithComment
+        fieldKey="inspectionTestingPlans"
+        fieldLabel="2. Inspection Testing Plan (ITP)"
+        alignButton="top"
+      >
       <div className="space-y-4">
         <div 
           className="flex justify-between items-center cursor-pointer bg-gray-50 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors" 
@@ -1086,8 +1104,14 @@ export default function Tab6Lampiran({ formData, onChange, isEditing }: TabProps
         </div>
         )}
       </div>
+      </FieldWithComment>
 
       {/* 3. Document Request Sheet (DRS) */}
+      <FieldWithComment
+        fieldKey="documentRequestSheets"
+        fieldLabel="3. Document Request Sheet (DRS)"
+        alignButton="top"
+      >
       <div className="space-y-4">
         <div 
           className="flex justify-between items-center cursor-pointer bg-gray-50 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors" 
@@ -1141,8 +1165,14 @@ export default function Tab6Lampiran({ formData, onChange, isEditing }: TabProps
         </div>
         )}
       </div>
+      </FieldWithComment>
 
       {/* 4. Performance Guarantee Requirement Sheet (PGRS) */}
+      <FieldWithComment
+        fieldKey="performanceGuarantees"
+        fieldLabel="4. Performance Guarantee Requirement Sheet (PGRS)"
+        alignButton="top"
+      >
       <div className="space-y-4">
         <div 
           className="flex justify-between items-center cursor-pointer bg-gray-50 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors" 
@@ -1202,6 +1232,7 @@ export default function Tab6Lampiran({ formData, onChange, isEditing }: TabProps
         </div>
         )}
       </div>
+      </FieldWithComment>
     </div>
   );
 }

@@ -29,9 +29,25 @@ export function middleware(req: NextRequest) {
   let isSuperAdmin = false;
   let userId: number | undefined;
 
-  // We skip decoding JWT payload here because jsonwebtoken and Buffer 
-  // are not reliably supported in Edge runtime. The actual verification 
-  // is done in Server Components (auth.ts) and API Routes.
+  // Decode JWT payload using Web API atob (Edge runtime compatible)
+  if (token) {
+    try {
+      const parts = token.split(".");
+      if (parts.length === 3) {
+        const base64Url = parts[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = base64.padEnd(
+          base64.length + ((4 - (base64.length % 4)) % 4),
+          "="
+        );
+        const payload = JSON.parse(atob(padded));
+        isSuperAdmin = Boolean(payload.isSuperAdmin);
+        userId = payload.sub;
+      }
+    } catch {
+      // Fallback: actual verification is performed in Server Components (auth.ts) and API Routes
+    }
+  }
 
   // === RATE LIMITING ===
   // Apply rate limiting to API routes
@@ -88,12 +104,8 @@ export function middleware(req: NextRequest) {
   }
 
   const protectedPaths = ["/dashboard", "/admin", "/tor"];
-  const adminPaths = ["/admin"];
 
   const isProtected = protectedPaths.some((p) =>
-    pathname === p || pathname.startsWith(p + "/")
-  );
-  const isAdminPath = adminPaths.some((p) =>
     pathname === p || pathname.startsWith(p + "/")
   );
 
@@ -109,11 +121,8 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(dashUrl);
   }
 
-  // Bukan super admin tapi akses /admin → balikin ke /dashboard
-  if (isAdminPath && isAuthenticated && !isSuperAdmin) {
-    const dashUrl = new URL("/dashboard", req.url);
-    return NextResponse.redirect(dashUrl);
-  }
+  // Verifikasi role Super Admin untuk /admin dilakukan di Server Layout (src/app/(main)/admin/layout.tsx)
+  // agar mendukung baik flag user.isSuperAdmin maupun role SUPER_ADMIN dari database.
 
   return NextResponse.next();
 }

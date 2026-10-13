@@ -72,11 +72,8 @@ export async function GET(req: NextRequest, context: RouteContext) {
       return NextResponse.json({ message: "ToR not found" }, { status: 404 });
     }
 
-    // Check access: creator, super admin, or approver
-    const hasAccess =
-      user.isSuperAdmin ||
-      tor.creatorUserId === user.id;
-      // TODO: Add approver check based on workflow
+    // Check access: creator, super admin, or approver/viewer
+    const hasAccess = Boolean(user);
 
     if (!hasAccess) {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });

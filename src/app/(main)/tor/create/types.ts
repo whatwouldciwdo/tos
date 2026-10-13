@@ -122,6 +122,7 @@ export interface TorFormData {
   documentRequestSheets?: DocumentRequestSheet[];
   performanceGuarantees?: PerformanceGuarantee[];
   attachments?: TorAttachment[];
+  fieldComments?: TorFieldComment[];
   
   // Budget Items
   budgetItems?: BudgetItem[];
@@ -130,6 +131,24 @@ export interface TorFormData {
   statusStage?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface TorFieldComment {
+  id: string;
+  fieldKey: string;
+  fieldLabel: string;
+  tabId: TabId;
+  tabLabel: string;
+  comment: string;
+  authorId: number;
+  authorName: string;
+  authorPosition: string;
+  stepNumber?: number;
+  statusStage?: string;
+  resolved?: boolean;
+  resolvedAt?: string;
+  resolvedByName?: string;
+  createdAt: string;
 }
 
 export interface TorAttachment {

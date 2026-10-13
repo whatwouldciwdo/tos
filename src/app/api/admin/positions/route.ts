@@ -5,14 +5,22 @@ import { prisma } from "@/lib/prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-function ensureSuperAdmin(req: NextRequest) {
+async function ensureSuperAdmin(req: NextRequest) {
   const token = req.cookies.get("auth-token")?.value;
   if (!token) throw new Error("UNAUTHENTICATED");
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
-    if (!decoded.isSuperAdmin) throw new Error("FORBIDDEN");
-    return decoded;
+    if (decoded.isSuperAdmin) return decoded;
+    if (decoded.sub) {
+      const dbUser = await prisma.user.findUnique({
+        where: { id: decoded.sub },
+        include: { position: { include: { positionRoles: { include: { role: true } } } } },
+      });
+      const hasRole = dbUser?.position?.positionRoles?.some((pr) => pr.role?.name === "SUPER_ADMIN");
+      if (dbUser?.isSuperAdmin || hasRole) return decoded;
+    }
+    throw new Error("FORBIDDEN");
   } catch {
     throw new Error("FORBIDDEN");
   }
@@ -20,7 +28,7 @@ function ensureSuperAdmin(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    ensureSuperAdmin(req);
+    await ensureSuperAdmin(req);
 
     const body = await req.json();
     const {

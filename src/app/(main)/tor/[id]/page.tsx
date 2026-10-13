@@ -63,6 +63,7 @@ export default async function TorDetailPage({ params }: PageProps) {
       where: { id: sessionUser.id },
       select: { 
         id: true, 
+        name: true,
         positionId: true, 
         isSuperAdmin: true,
         position: {
@@ -116,19 +117,29 @@ export default async function TorDetailPage({ params }: PageProps) {
 
   // Permission calculations
   const isCreator = tor.creatorUserId === sessionUser.id;
-  const canEdit = isCreator && (tor.statusStage === "DRAFT" || tor.statusStage === "REVISE");
+  const hasSuperAdminRole = !!dbUser?.position?.positionRoles?.some(
+    (pr: any) => pr.role?.name === "SUPER_ADMIN"
+  );
+  const isSuperAdmin = Boolean(dbUser?.isSuperAdmin || hasSuperAdminRole);
+  const canEdit = (isCreator || isSuperAdmin) && (tor.statusStage === "DRAFT" || tor.statusStage === "REVISE");
   const canSubmit = isCreator && tor.statusStage === "DRAFT";
 
   const canApprove =
     tor.statusStage !== "DRAFT" &&
+    tor.statusStage !== "REVISE" &&
     !tor.isFinalApproved &&
     !!dbUser &&
-    !isCreator &&
-    (dbUser.isSuperAdmin ||
-      (currentStep && dbUser.positionId === currentStep.positionId));
+    (isSuperAdmin ||
+      (!isCreator &&
+        currentStep &&
+        (dbUser.positionId === currentStep.positionId ||
+          (dbUser.position?.name &&
+            currentStep.positionName &&
+            dbUser.position.name === currentStep.positionName))));
 
   // Check if user has EXPORT role
   const canExport =
+    isSuperAdmin ||
     !!dbUser?.position?.positionRoles?.some(
       (pr: any) => pr.role?.name === 'EXPORT'
     );
@@ -155,6 +166,7 @@ export default async function TorDetailPage({ params }: PageProps) {
     workStages: tor.workStagesData,
     directorProposals: tor.directorProposals || [],
     fieldDirectorProposals: tor.fieldDirectorProposals || [],
+    fieldComments: tor.fieldComments || [],
     statusStage: tor.statusStage,
   };
 
@@ -259,6 +271,7 @@ export default async function TorDetailPage({ params }: PageProps) {
               canSubmit={canSubmit}
               canApprove={canApprove}
               canExport={canExport}
+              initialFieldComments={tor.fieldComments || []}
             />
           </div>
         </div>
@@ -275,6 +288,11 @@ export default async function TorDetailPage({ params }: PageProps) {
             creatorName={tor.creator?.name}
             creatorPosition={tor.creator?.position?.name}
             isViewOnly={true}
+            currentUserName={dbUser?.name || sessionUser.name}
+            canComment={!!canApprove}
+            currentUserId={sessionUser.id}
+            isCreator={isCreator}
+            isSuperAdmin={isSuperAdmin}
           />
 
           {/* Approval History */}

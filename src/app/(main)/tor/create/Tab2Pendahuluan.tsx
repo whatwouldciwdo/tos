@@ -2,6 +2,7 @@
 
 import { TabProps } from "./types";
 import TiptapEditor from "./components/TiptapEditor";
+import { FieldWithComment } from "./components/FieldCommentWrapper";
 import { useState } from "react";
 import { AlertModal, ConfirmModal } from "@/components/Modal";
 import { useAlertModal, useConfirmModal } from "@/hooks/useModal";
@@ -104,201 +105,219 @@ export default function Tab2Pendahuluan({ formData, onChange, isEditing = false,
       </h2>
 
       {/* Judul otomatis dari Informasi Umum */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Judul Pekerjaan <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          value={formData.program || formData.title || ""}
-          readOnly
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
-          required
-        />
-      </div>
+      <FieldWithComment fieldKey="title" fieldLabel="Judul Pekerjaan">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Judul Pekerjaan <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={formData.program || formData.title || ""}
+            readOnly
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
+            required
+          />
+        </div>
+      </FieldWithComment>
       
       {/* Cover Image */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Cover Image (Opsional)
-        </label>
-        <div className="space-y-3">
-          {/* Upload Input */}
-          <div className="flex items-center gap-3">
-            <input
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-              onChange={handleImageUpload}
-              disabled={uploading || !isEditing}
-              className="block w-full text-sm text-gray-500 
-                file:mr-4 file:py-2 file:px-4 
-                file:rounded-full file:border-0 
-                file:text-sm file:font-semibold 
-                file:bg-blue-50 file:text-blue-700 
-                hover:file:bg-blue-100
-                disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            {uploading && (
-              <span className="text-sm text-blue-600">Uploading...</span>
+      <FieldWithComment fieldKey="coverImage" fieldLabel="Cover Image (Opsional)">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Cover Image (Opsional)
+          </label>
+          <div className="space-y-3">
+            {/* Upload Input */}
+            <div className="flex items-center gap-3">
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={handleImageUpload}
+                disabled={uploading || !isEditing}
+                className="block w-full text-sm text-gray-500 
+                  file:mr-4 file:py-2 file:px-4 
+                  file:rounded-full file:border-0 
+                  file:text-sm file:font-semibold 
+                  file:bg-blue-50 file:text-blue-700 
+                  hover:file:bg-blue-100
+                  disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              {uploading && (
+                <span className="text-sm text-blue-600">Uploading...</span>
+              )}
+            </div>
+
+            {/* Upload Error */}
+            {uploadError && (
+              <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                ⚠️ {uploadError}
+              </div>
+            )}
+            
+            {/* Image Preview */}
+            {formData.coverImage && (
+              <div className="space-y-2">
+                <div className="relative inline-block">
+                  <div className="border-2 border-gray-300 rounded-lg overflow-hidden bg-gray-50">
+                    <img 
+                      src={`/${formData.coverImage}`}
+                      alt="Cover Preview" 
+                      className="w-40 h-28 object-cover"
+                      onLoad={() => console.log("✅ Image preview loaded successfully")}
+                      onError={(e) => {
+                        console.error("❌ Failed to load image preview:", formData.coverImage);
+                        // Fallback to placeholder
+                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='112'%3E%3Crect fill='%23f0f0f0' width='160' height='112'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999' font-size='12'%3EImage Error%3C/text%3E%3C/svg%3E";
+                      }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    disabled={!isEditing}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-600 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Hapus gambar"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                {/* Path Info */}
+                <div className="text-xs space-y-1">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <span className="font-medium">Path:</span>
+                    <code className="bg-gray-100 px-2 py-0.5 rounded">{formData.coverImage}</code>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-600">
+                    <span>✓</span>
+                    <span>Gambar siap untuk export</span>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
-
-          {/* Upload Error */}
-          {uploadError && (
-            <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-              ⚠️ {uploadError}
-            </div>
-          )}
           
-          {/* Image Preview */}
-          {formData.coverImage && (
-            <div className="space-y-2">
-              <div className="relative inline-block">
-                <div className="border-2 border-gray-300 rounded-lg overflow-hidden bg-gray-50">
-                  <img 
-                    src={`/${formData.coverImage}`}
-                    alt="Cover Preview" 
-                    className="w-40 h-28 object-cover"
-                    onLoad={() => console.log("✅ Image preview loaded successfully")}
-                    onError={(e) => {
-                      console.error("❌ Failed to load image preview:", formData.coverImage);
-                      // Fallback to placeholder
-                      e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='112'%3E%3Crect fill='%23f0f0f0' width='160' height='112'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999' font-size='12'%3EImage Error%3C/text%3E%3C/svg%3E";
-                    }}
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  disabled={!isEditing}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-600 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Hapus gambar"
-                >
-                  ×
-                </button>
-              </div>
-              
-              {/* Path Info */}
-              <div className="text-xs space-y-1">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <span className="font-medium">Path:</span>
-                  <code className="bg-gray-100 px-2 py-0.5 rounded">{formData.coverImage}</code>
-                </div>
-                <div className="flex items-center gap-2 text-green-600">
-                  <span>✓</span>
-                  <span>Gambar siap untuk export</span>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Help Text */}
+          <div className="mt-2 space-y-1">
+            <p className="text-xs text-gray-500">
+              Format: JPG, PNG, GIF, WebP | Max: 5MB
+            </p>
+            <p className="text-xs text-gray-500">
+              Gambar akan ditampilkan di cover halaman dokumen TOR
+            </p>
+          </div>
         </div>
-        
-        {/* Help Text */}
-        <div className="mt-2 space-y-1">
-          <p className="text-xs text-gray-500">
-            Format: JPG, PNG, GIF, WebP | Max: 5MB
-          </p>
-          <p className="text-xs text-gray-500">
-            Gambar akan ditampilkan di cover halaman dokumen TOR
-          </p>
-        </div>
-      </div>
+      </FieldWithComment>
 
       {/* Pendahuluan */}
-<TiptapEditor
-  label="Pendahuluan"
-  content={formData.introduction || `<p>PT PLN Indonesia Power UBP Cilegon memiliki 2 unit PLTG dan 1 unit Turbin Uap, dengan total kapasitas pembangkit sebesar 740 MW. UBP Cilegon merupakan unit Mitsubishi dengan type M701F.</p>`}
-  onChange={(html) => handleInputChange("introduction", html)}
-  placeholder="Jelaskan pendahuluan pekerjaan ini..."
-  readOnly={!isEditing}
-  ydoc={ydoc}
-  fieldName="introduction"
-  awarenessProvider={awarenessProvider}
-  collabUser={collabUser}
-/>
+      <FieldWithComment fieldKey="introduction" fieldLabel="Pendahuluan">
+        <TiptapEditor
+          label="Pendahuluan"
+          content={formData.introduction || `<p>PT PLN Indonesia Power UBP Cilegon memiliki 2 unit PLTG dan 1 unit Turbin Uap, dengan total kapasitas pembangkit sebesar 740 MW. UBP Cilegon merupakan unit Mitsubishi dengan type M701F.</p>`}
+          onChange={(html) => handleInputChange("introduction", html)}
+          placeholder="Jelaskan pendahuluan pekerjaan ini..."
+          readOnly={!isEditing}
+          ydoc={ydoc}
+          fieldName="introduction"
+          awarenessProvider={awarenessProvider}
+          collabUser={collabUser}
+        />
+      </FieldWithComment>
 
-{/* Latar Belakang */}
-<TiptapEditor
-  label="Latar Belakang"
-  required
-  content={formData.background}
-  onChange={(html) => handleInputChange("background", html)}
-  placeholder="Jelaskan latar belakang pekerjaan ini..."
-  readOnly={!isEditing}
-  ydoc={ydoc}
-  fieldName="background"
-  awarenessProvider={awarenessProvider}
-  collabUser={collabUser}
-/>
+      {/* Latar Belakang */}
+      <FieldWithComment fieldKey="background" fieldLabel="Latar Belakang">
+        <TiptapEditor
+          label="Latar Belakang"
+          required
+          content={formData.background}
+          onChange={(html) => handleInputChange("background", html)}
+          placeholder="Jelaskan latar belakang pekerjaan ini..."
+          readOnly={!isEditing}
+          ydoc={ydoc}
+          fieldName="background"
+          awarenessProvider={awarenessProvider}
+          collabUser={collabUser}
+        />
+      </FieldWithComment>
 
-{/* Tujuan */}
-<TiptapEditor
-  label="Tujuan"
-  required
-  content={formData.objective}
-  onChange={(html) => handleInputChange("objective", html)}
-  placeholder="Jelaskan tujuan dari pekerjaan ini..."
-  readOnly={!isEditing}
-  ydoc={ydoc}
-  fieldName="objective"
-  awarenessProvider={awarenessProvider}
-  collabUser={collabUser}
-/>
+      {/* Tujuan */}
+      <FieldWithComment fieldKey="objective" fieldLabel="Tujuan">
+        <TiptapEditor
+          label="Tujuan"
+          required
+          content={formData.objective}
+          onChange={(html) => handleInputChange("objective", html)}
+          placeholder="Jelaskan tujuan dari pekerjaan ini..."
+          readOnly={!isEditing}
+          ydoc={ydoc}
+          fieldName="objective"
+          awarenessProvider={awarenessProvider}
+          collabUser={collabUser}
+        />
+      </FieldWithComment>
 
-{/* Ruang Lingkup */}
-<TiptapEditor
-  label="Ruang Lingkup Pekerjaan"
-  required
-  content={formData.scope}
-  onChange={(html) => handleInputChange("scope", html)}
-  placeholder="Jelaskan ruang lingkup pekerjaan secara detail..."
-  readOnly={!isEditing}
-  ydoc={ydoc}
-  fieldName="scope"
-  awarenessProvider={awarenessProvider}
-  collabUser={collabUser}
-/>
+      {/* Ruang Lingkup */}
+      <FieldWithComment fieldKey="scope" fieldLabel="Ruang Lingkup Pekerjaan">
+        <TiptapEditor
+          label="Ruang Lingkup Pekerjaan"
+          required
+          content={formData.scope}
+          onChange={(html) => handleInputChange("scope", html)}
+          placeholder="Jelaskan ruang lingkup pekerjaan secara detail..."
+          readOnly={!isEditing}
+          ydoc={ydoc}
+          fieldName="scope"
+          awarenessProvider={awarenessProvider}
+          collabUser={collabUser}
+        />
+      </FieldWithComment>
 
-{/* Garansi */}
-<TiptapEditor
-  label="Garansi"
-  content={formData.warranty}
-  onChange={(html) => handleInputChange("warranty", html)}
-  placeholder="Jelaskan garansi yang diberikan untuk pekerjaan ini..."
-  readOnly={!isEditing}
-  ydoc={ydoc}
-  fieldName="warranty"
-  awarenessProvider={awarenessProvider}
-  collabUser={collabUser}
-/>
+      {/* Garansi */}
+      <FieldWithComment fieldKey="warranty" fieldLabel="Garansi">
+        <TiptapEditor
+          label="Garansi"
+          content={formData.warranty}
+          onChange={(html) => handleInputChange("warranty", html)}
+          placeholder="Jelaskan garansi yang diberikan untuk pekerjaan ini..."
+          readOnly={!isEditing}
+          ydoc={ydoc}
+          fieldName="warranty"
+          awarenessProvider={awarenessProvider}
+          collabUser={collabUser}
+        />
+      </FieldWithComment>
 
-{/* Kriteria yang Diterima */}
-<TiptapEditor
-  label="Kriteria yang Diterima"
-  content={formData.acceptanceCriteria}
-  onChange={(html) => handleInputChange("acceptanceCriteria", html)}
-  placeholder="Jelaskan kriteria penerimaan hasil pekerjaan..."
-  readOnly={!isEditing}
-  ydoc={ydoc}
-  fieldName="acceptanceCriteria"
-  awarenessProvider={awarenessProvider}
-  collabUser={collabUser}
-/>
+      {/* Kriteria yang Diterima */}
+      <FieldWithComment fieldKey="acceptanceCriteria" fieldLabel="Kriteria yang Diterima">
+        <TiptapEditor
+          label="Kriteria yang Diterima"
+          content={formData.acceptanceCriteria}
+          onChange={(html) => handleInputChange("acceptanceCriteria", html)}
+          placeholder="Jelaskan kriteria penerimaan hasil pekerjaan..."
+          readOnly={!isEditing}
+          ydoc={ydoc}
+          fieldName="acceptanceCriteria"
+          awarenessProvider={awarenessProvider}
+          collabUser={collabUser}
+        />
+      </FieldWithComment>
 
       {/* Deskripsi Tambahan */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Deskripsi Tambahan (Opsional)
-        </label>
-        <textarea
-          value={formData.description || ""}
-          onChange={(e) => handleInputChange("description", e.target.value)}
-          placeholder="Informasi tambahan jika diperlukan"
-          rows={3}
-          disabled={!isEditing}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
-        />
-      </div>
+      <FieldWithComment fieldKey="description" fieldLabel="Deskripsi Tambahan (Opsional)">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Deskripsi Tambahan (Opsional)
+          </label>
+          <textarea
+            value={formData.description || ""}
+            onChange={(e) => handleInputChange("description", e.target.value)}
+            placeholder="Informasi tambahan jika diperlukan"
+            rows={3}
+            disabled={!isEditing}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
+          />
+        </div>
+      </FieldWithComment>
       
       {/* Modals */}
       <AlertModal
