@@ -128,9 +128,9 @@ export default function ApprovalProgressBar({
   // Detailed variant
   return (
     <div className={`space-y-4 ${className}`}>
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold text-gray-700">Approval Progress</h3>
-        <span className="text-xs text-gray-500">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-900">Approval Progress</h3>
+        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
           {isFinalApproved
             ? "✓ Completed"
             : `${currentStepNumber} / ${totalSteps} Steps`}
