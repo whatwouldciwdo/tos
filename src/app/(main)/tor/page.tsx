@@ -203,7 +203,7 @@ export default async function TorListPage({ searchParams }: PageProps) {
   const year = now.getFullYear();
 
   return (
-    <div className="min-h-screen flex bg-[#262626] text-white">
+    <div className="min-h-screen flex neu-bg text-white">
       {/* Sidebar */}
       <Sidebar
         userName={userName}
@@ -218,29 +218,29 @@ export default async function TorListPage({ searchParams }: PageProps) {
       {/* Main Content */}
       <main className="flex-1 min-w-0 flex flex-col px-8 md:px-16 py-10 transition-all duration-300">
         {/* Welcome Header */}
-        <div className="flex justify-between items-start mb-8">
+        <div className="neu-card p-6 md:p-8 flex flex-col sm:flex-row justify-between items-start gap-6 mb-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-1.5 bg-[#42ff6b] rounded-full" />
-              <span className="text-lg">Selamat Datang,</span>
+              <div className="w-8 h-1.5 bg-[#42ff6b] rounded-full shadow-[0_0_10px_rgba(66,255,107,0.5)]" />
+              <span className="text-lg text-gray-300">Selamat Datang,</span>
             </div>
 
             <div className="space-y-1">
               <h1 className="text-3xl md:text-4xl font-semibold leading-snug">
                 {userName}
                 <br />
-                {positionName}
+                <span className="text-[#42ff6b] text-2xl md:text-3xl">{positionName}</span>
               </h1>
-              <p className="text-sm text-gray-300">{bidangName}</p>
+              <p className="text-sm text-gray-400">{bidangName}</p>
             </div>
           </div>
 
-          <div className="text-right leading-tight text-xl md:text-2xl font-semibold">
-            <div>
+          <div className="neu-inset px-5 py-4 text-right leading-tight text-lg md:text-xl font-semibold text-gray-200">
+            <div className="text-[#42ff6b]">
               {dayName}, {dayNumber}
             </div>
             <div>{monthName}</div>
-            <div>{year}</div>
+            <div className="text-gray-400 text-base">{year}</div>
           </div>
         </div>
 
@@ -259,7 +259,7 @@ export default async function TorListPage({ searchParams }: PageProps) {
 
             <Link
               href="/tor/create"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#42ff6b] text-black rounded-lg hover:bg-[#38e05c] transition-colors font-medium shadow-lg shadow-[#42ff6b]/20"
+              className="neu-btn-accent inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold"
             >
               <PlusCircle size={20} />
               Create New TOR
@@ -270,13 +270,13 @@ export default async function TorListPage({ searchParams }: PageProps) {
           <DashboardStats stats={stats} />
 
           {/* Tabs filter */}
-          <div className="bg-[#1f1f1f] rounded-lg border border-[#333] p-1.5 inline-flex gap-1">
+          <div className="neu-inset p-1.5 inline-flex gap-2">
             <Link
               href="/tor"
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                 view === "mine"
-                  ? "bg-[#42ff6b] text-black shadow-sm"
-                  : "text-gray-300 hover:bg-[#2a2a2a]"
+                  ? "neu-btn-accent font-semibold"
+                  : "text-gray-300 hover:text-white"
               }`}
             >
               <FileText size={16} />
@@ -285,10 +285,10 @@ export default async function TorListPage({ searchParams }: PageProps) {
 
             <Link
               href="/tor?view=approve"
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                 view === "approve"
-                  ? "bg-[#42ff6b] text-black shadow-sm"
-                  : "text-gray-300 hover:bg-[#2a2a2a]"
+                  ? "neu-btn-accent font-semibold"
+                  : "text-gray-300 hover:text-white"
               }`}
             >
               <CheckCircle size={16} />
@@ -297,7 +297,7 @@ export default async function TorListPage({ searchParams }: PageProps) {
           </div>
 
           {/* List TOR */}
-          <div className="space-y-4 pb-10">
+          <div className="space-y-5 pb-10">
             {torListSafe.length > 0 ? (
               torListSafe.map((tor) => (
                 <TorListItem
@@ -309,9 +309,11 @@ export default async function TorListPage({ searchParams }: PageProps) {
                 />
               ))
             ) : (
-              <div className="bg-[#1f1f1f] border border-[#333] rounded-xl p-12 text-center">
+              <div className="neu-card p-12 text-center">
                 <div className="max-w-md mx-auto">
-                  <div className="text-6xl mb-4">📄</div>
+                  <div className="w-20 h-20 mx-auto mb-5 neu-inset flex items-center justify-center text-4xl">
+                    📄
+                  </div>
                   <h3 className="text-xl font-semibold mb-2">
                     {view === "mine" ? "No TORs Yet" : "No Pending Approvals"}
                   </h3>
@@ -323,7 +325,7 @@ export default async function TorListPage({ searchParams }: PageProps) {
                   {view === "mine" && (
                     <Link
                       href="/tor/create"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#42ff6b] text-black rounded-lg hover:bg-[#38e05c] transition-colors font-medium"
+                      className="neu-btn-accent inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold"
                     >
                       <PlusCircle size={20} />
                       Create Your First TOR

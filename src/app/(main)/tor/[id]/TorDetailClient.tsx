@@ -199,9 +199,9 @@ export default function TorDetailClient({
           <button
             onClick={handleSubmit}
             disabled={loading !== null}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium transition-colors"
+            className="neu-btn flex items-center gap-2 px-4 py-2.5 text-sm text-blue-400 hover:text-blue-300 border border-blue-500/30 disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
           >
-            <Send size={18} />
+            <Send size={17} />
             {loading === "submit" ? "Mengajukan..." : "Ajukan TOR"}
           </button>
         )}
@@ -211,21 +211,21 @@ export default function TorDetailClient({
             <button
               onClick={handleApprove}
               disabled={loading !== null}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium transition-colors"
+              className="neu-btn-accent flex items-center gap-2 px-4 py-2.5 text-sm disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
             >
-              <CheckCircle size={18} />
+              <CheckCircle size={17} />
               {loading === "approve" ? "Menyetujui..." : "Setujui"}
             </button>
 
             <button
               onClick={handleOpenReviseModal}
               disabled={loading !== null}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-600 hover:bg-yellow-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium transition-colors"
+              className="neu-btn flex items-center gap-2 px-4 py-2.5 text-sm text-amber-400 hover:text-amber-300 border border-amber-500/30 disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
             >
-              <AlertCircle size={18} />
+              <AlertCircle size={17} />
               Revisi
               {unresolvedComments.length > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 text-[11px] font-bold bg-white text-yellow-700 rounded-full">
+                <span className="ml-1 px-1.5 py-0.5 text-[11px] font-bold bg-amber-400 text-black rounded-full">
                   {unresolvedComments.length}
                 </span>
               )}
@@ -234,9 +234,9 @@ export default function TorDetailClient({
             <button
               onClick={() => setShowNoteModal("reject")}
               disabled={loading !== null}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium transition-colors"
+              className="neu-btn flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 border border-red-500/30 disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
             >
-              <XCircle size={18} />
+              <XCircle size={17} />
               Tolak
             </button>
           </>
@@ -246,24 +246,24 @@ export default function TorDetailClient({
           <button
             onClick={handleExport}
             disabled={loading !== null}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium transition-colors"
+            className="neu-btn flex items-center gap-2 px-4 py-2.5 text-sm text-purple-400 hover:text-purple-300 border border-purple-500/30 disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
           >
-            <Download size={18} />
+            <Download size={17} />
             {loading === "export" ? "Exporting..." : "Export to Word"}
           </button>
         )}
       </div>
 
       {error && (
-        <div className="p-3 bg-red-900/30 border border-red-800 rounded-lg text-red-200 text-sm">
+        <div className="p-3 neu-inset border border-red-500/40 text-red-300 text-sm">
           {error}
         </div>
       )}
 
       {/* Modal for Note */}
       {showNoteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-[#333] rounded-xl shadow-xl w-full max-w-lg p-6 space-y-4 border border-[#444]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="neu-card w-full max-w-lg p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-white">
                 {showNoteModal === "revise" ? "Permintaan Revisi" : "Tolak TOR"}
@@ -272,7 +272,7 @@ export default function TorDetailClient({
                 <button
                   type="button"
                   onClick={() => setActionNote(buildFieldCommentsSummary())}
-                  className="inline-flex items-center gap-1.5 text-xs text-amber-300 hover:text-amber-200 bg-amber-900/40 hover:bg-amber-900/60 border border-amber-700/50 px-2.5 py-1 rounded-md transition-colors"
+                  className="neu-btn inline-flex items-center gap-1.5 text-xs text-amber-300 px-3 py-1.5"
                   title="Salin rangkuman komentar per field ke catatan revisi"
                 >
                   <MessageSquarePlus size={13} />
@@ -288,11 +288,11 @@ export default function TorDetailClient({
               <textarea
                 value={actionNote}
                 onChange={(e) => setActionNote(e.target.value)}
-                className="w-full px-3 py-2 bg-[#222] border border-[#444] rounded-lg text-white focus:outline-none focus:border-blue-500 min-h-[140px] text-sm"
+                className="w-full px-3.5 py-2.5 neu-inset text-white focus:outline-none min-h-[140px] text-sm"
                 placeholder="Tuliskan catatan anda disini..."
               />
               {showNoteModal === "revise" && unresolvedComments.length > 0 && (
-                <p className="text-xs text-amber-300/80 mt-1.5">
+                <p className="text-xs text-amber-300/80 mt-2">
                   💡 Terdapat {unresolvedComments.length} komentar revisi per field yang otomatis dirangkum di atas dan tetap tersimpan di masing-masing field untuk pembuat TOR.
                 </p>
               )}
@@ -305,17 +305,17 @@ export default function TorDetailClient({
                   setActionNote("");
                   setError(null);
                 }}
-                className="px-4 py-2 rounded-lg bg-[#444] hover:bg-[#555] text-gray-200 text-sm font-medium"
+                className="neu-btn px-4 py-2 text-gray-300 text-sm font-medium"
               >
                 Batal
               </button>
               <button
                 onClick={handleActionWithNote}
                 disabled={loading !== null || !actionNote.trim()}
-                className={`px-4 py-2 rounded-lg text-white text-sm font-medium ${
+                className={`neu-btn px-4 py-2 text-sm font-semibold ${
                   showNoteModal === "revise" 
-                    ? "bg-yellow-600 hover:bg-yellow-700" 
-                    : "bg-red-600 hover:bg-red-700"
+                    ? "text-amber-400 border border-amber-500/40" 
+                    : "text-red-400 border border-red-500/40"
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 {loading === showNoteModal ? "Memproses..." : "Kirim"}

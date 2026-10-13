@@ -165,7 +165,7 @@ export default function Sidebar({
       />
 
       <aside
-        className={`fixed left-0 top-0 h-screen w-24 bg-[#1f1f1f] border-r border-[#42ff6b] flex-shrink-0 z-50 transition-transform duration-300 ease-in-out ${
+        className={`fixed left-0 top-0 h-screen w-24 neu-sidebar flex-shrink-0 z-50 transition-transform duration-300 ease-in-out ${
           isMinimized ? "-translate-x-full" : "translate-x-0"
         }`}
       >
@@ -175,7 +175,7 @@ export default function Sidebar({
           onClick={toggleMinimize}
           title={isMinimized ? "Buka Side Navbar" : "Minimize Side Navbar"}
           aria-label={isMinimized ? "Buka Side Navbar" : "Minimize Side Navbar"}
-          className="absolute -right-7 top-1/2 -translate-y-1/2 w-7 h-14 bg-[#1f1f1f] border border-l-0 border-[#42ff6b] rounded-r-xl flex items-center justify-center text-[#42ff6b] hover:bg-[#42ff6b] hover:text-black transition-all duration-200 shadow-lg cursor-pointer z-50"
+          className="absolute -right-7 top-1/2 -translate-y-1/2 w-7 h-14 neu-btn rounded-r-xl rounded-l-none border-l-0 flex items-center justify-center text-[#42ff6b] hover:text-[#42ff6b] transition-all duration-200 cursor-pointer z-50"
         >
           {isMinimized ? (
             <ChevronRight className="w-4 h-4 stroke-[2.5]" />
@@ -188,13 +188,13 @@ export default function Sidebar({
         <div className="w-full h-full flex flex-col items-center justify-between py-6 overflow-y-auto overflow-x-hidden">
           {/* Logo & Avatar */}
           <div className="flex flex-col items-center gap-4 w-full">
-            <div className="w-14 h-14">
+            <div className="w-15 h-15 p-1.5 neu-inset-sm rounded-2xl flex items-center justify-center">
               <Image
                 src="/pln-tos-logo.jpg"
                 alt="TOS Logo"
-                width={56}
-                height={56}
-                className="object-contain"
+                width={48}
+                height={48}
+                className="object-contain rounded-lg"
               />
             </div>
 
@@ -203,13 +203,13 @@ export default function Sidebar({
               {pathname === "/tor" ? (
                 <button
                   onClick={() => setShowProfileModal(true)}
-                  className="w-12 h-12 rounded-full bg-[#42ff6b] flex items-center justify-center text-black font-semibold text-base hover:bg-[#38e05c] hover:scale-110 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-[#42ff6b]/50"
+                  className="w-12 h-12 rounded-full neu-btn-accent flex items-center justify-center font-bold text-base cursor-pointer"
                   title="Profile Settings"
                 >
                   {initials}
                 </button>
               ) : (
-                <div className="w-12 h-12 rounded-full bg-[#42ff6b] flex items-center justify-center text-black font-semibold text-base">
+                <div className="w-12 h-12 rounded-full neu-btn-accent flex items-center justify-center font-bold text-base">
                   {initials}
                 </div>
               )}
@@ -225,22 +225,22 @@ export default function Sidebar({
                     key={item.id}
                     type="button"
                     onClick={item.onClick}
-                    className={`flex flex-col items-center gap-1.5 text-xs transition-all duration-300 group cursor-pointer ${
+                    className={`flex flex-col items-center gap-2 text-xs transition-all duration-300 group cursor-pointer ${
                       item.active
                         ? "text-[#42ff6b]"
-                        : "text-white hover:text-[#42ff6b] hover:-translate-y-0.5"
+                        : "text-gray-300 hover:text-[#42ff6b]"
                     }`}
                   >
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                         item.active
-                          ? "border-2 border-[#42ff6b] bg-[#42ff6b]/15 shadow-lg shadow-[#42ff6b]/50"
-                          : "border-2 border-[#42ff6b] group-hover:bg-[#42ff6b]/20 group-hover:shadow-lg group-hover:shadow-[#42ff6b]/50 group-hover:scale-110"
+                          ? "neu-btn-active text-[#42ff6b]"
+                          : "neu-btn text-gray-200 group-hover:text-[#42ff6b]"
                       }`}
                     >
                       <item.icon className="w-5 h-5" />
                     </div>
-                    <span className="group-hover:font-semibold transition-all duration-300">
+                    <span className="font-medium tracking-wide group-hover:text-[#42ff6b] transition-all duration-300">
                       {item.label}
                     </span>
                   </button>
@@ -251,12 +251,12 @@ export default function Sidebar({
             <button
               type="button"
               onClick={handleLogout}
-              className="flex flex-col items-center gap-1.5 text-xs text-white hover:text-red-400 hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer"
+              className="flex flex-col items-center gap-2 text-xs text-gray-300 hover:text-red-400 transition-all duration-300 group cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-full border-2 border-[#42ff6b] group-hover:border-red-400 group-hover:bg-red-500/20 group-hover:shadow-lg group-hover:shadow-red-400/50 group-hover:scale-110 flex items-center justify-center transition-all duration-300">
+              <div className="w-11 h-11 rounded-2xl neu-btn group-hover:!border-red-500/40 flex items-center justify-center transition-all duration-300 text-gray-200 group-hover:text-red-400">
                 <LogOut className="w-5 h-5" />
               </div>
-              <span className="group-hover:font-semibold transition-all duration-300">
+              <span className="font-medium tracking-wide transition-all duration-300">
                 logout
               </span>
             </button>

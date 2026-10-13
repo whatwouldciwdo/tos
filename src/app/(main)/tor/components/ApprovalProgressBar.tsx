@@ -129,8 +129,8 @@ export default function ApprovalProgressBar({
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Approval Progress</h3>
-        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+        <h3 className="text-lg font-semibold text-white">Approval Progress</h3>
+        <span className="neu-inset-sm px-3 py-1 text-xs font-semibold text-blue-400">
           {isFinalApproved
             ? "✓ Completed"
             : `${currentStepNumber} / ${totalSteps} Steps`}
@@ -151,10 +151,10 @@ export default function ApprovalProgressBar({
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                     status === "completed"
-                      ? "bg-green-100 text-green-600 ring-4 ring-green-50"
+                      ? "neu-inset-sm text-[#42ff6b] border border-[#42ff6b]/30"
                       : status === "current"
-                      ? "bg-blue-100 text-blue-600 ring-4 ring-blue-50 animate-pulse"
-                      : "bg-gray-100 text-gray-400"
+                      ? "neu-inset-sm text-blue-400 border border-blue-400/40 animate-pulse"
+                      : "neu-inset-sm text-gray-500"
                   }`}
                 >
                   {status === "completed" ? (
@@ -170,40 +170,42 @@ export default function ApprovalProgressBar({
                 {!isLast && (
                   <div
                     className={`w-0.5 h-12 mt-1 transition-all duration-300 ${
-                      status === "completed" ? "bg-green-300" : "bg-gray-200"
+                      status === "completed" ? "bg-[#42ff6b]/50" : "bg-white/10"
                     }`}
                   />
                 )}
               </div>
 
               {/* Step Content */}
-              <div className="flex-1 pb-8">
-                <div
-                  className={`font-semibold text-sm ${
-                    status === "current"
-                      ? "text-blue-600"
-                      : status === "completed"
-                      ? "text-green-600"
-                      : "text-gray-500"
-                  }`}
-                >
-                  Step {step.stepNumber}: {step.positionName || step.label}
-                </div>
-                <div className="text-xs text-gray-500 mt-0.5">
-                  Status: {step.statusStage}
-                </div>
-                {status === "current" && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
-                    <Clock size={12} />
-                    Awaiting Approval
+              <div className="flex-1 pb-6">
+                <div className="neu-card-sm p-3.5">
+                  <div
+                    className={`font-semibold text-sm ${
+                      status === "current"
+                        ? "text-blue-400"
+                        : status === "completed"
+                        ? "text-[#42ff6b]"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    Step {step.stepNumber}: {step.positionName || step.label}
                   </div>
-                )}
-                {status === "completed" && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
-                    <CheckCircle2 size={12} />
-                    Approved
+                  <div className="text-xs text-gray-400 mt-0.5">
+                    Status: {step.statusStage}
                   </div>
-                )}
+                  {status === "current" && (
+                    <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 neu-inset-sm text-blue-400 text-xs font-medium">
+                      <Clock size={12} />
+                      Awaiting Approval
+                    </div>
+                  )}
+                  {status === "completed" && (
+                    <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 neu-inset-sm text-[#42ff6b] text-xs font-medium">
+                      <CheckCircle2 size={12} />
+                      Approved
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -212,12 +214,12 @@ export default function ApprovalProgressBar({
 
       {/* Final Status */}
       {isFinalApproved && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center gap-2 text-green-700">
+        <div className="mt-4 p-4 neu-inset border border-[#42ff6b]/30">
+          <div className="flex items-center gap-2 text-[#42ff6b]">
             <CheckCircle2 size={20} />
             <span className="font-semibold">Fully Approved</span>
           </div>
-          <p className="text-xs text-green-600 mt-1">
+          <p className="text-xs text-gray-300 mt-1">
             This TOR has been approved by all required approvers.
           </p>
         </div>

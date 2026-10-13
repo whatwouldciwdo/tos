@@ -175,19 +175,19 @@ export default async function TorDetailPage({ params }: PageProps) {
   const showApprovalHistory = Boolean(tor.history && tor.history.length > 0);
 
   return (
-    <div className="min-h-screen bg-[#262626] text-white">
-      {/* Premium Header Section */}
-      <div className="relative bg-gradient-to-b from-[#181818] via-[#1f1f1f] to-[#242424] border-b border-white/10 shadow-xl overflow-hidden">
-        {/* Subtle decorative top accent line */}
-        <div className="h-1 w-full bg-gradient-to-r from-[#42ff6b] via-emerald-400 to-teal-500" />
+    <div className="min-h-screen neu-bg text-white">
+      {/* Premium Neumorphic Header Section */}
+      <div className="max-w-7xl mx-auto px-6 pt-7">
+        <div className="neu-card p-6 md:p-7 relative overflow-hidden">
+          {/* Subtle decorative top accent line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#42ff6b] via-emerald-400 to-teal-500" />
 
-        <div className="max-w-7xl mx-auto px-6 py-7">
           {/* Top Bar: Navigation + Title on Left, Action Buttons on Right */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-6 border-b border-white/10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-6 border-b border-white/5">
             <div className="flex items-start gap-4 min-w-0">
               <Link
                 href="/tor"
-                className="mt-0.5 w-11 h-11 rounded-xl bg-[#2a2a2a] border border-[#42ff6b]/40 hover:bg-[#42ff6b] hover:text-black hover:border-[#42ff6b] text-[#42ff6b] flex items-center justify-center transition-all duration-200 shadow-lg shadow-black/30 shrink-0 group"
+                className="mt-0.5 w-11 h-11 neu-btn text-[#42ff6b] flex items-center justify-center shrink-0 group"
                 title="Kembali ke Dashboard"
               >
                 <Home size={20} className="transition-transform group-hover:scale-105" />
@@ -196,12 +196,12 @@ export default async function TorDetailPage({ params }: PageProps) {
               <div className="min-w-0 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
                   {tor.bidang?.name && (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#42ff6b]/10 text-[#42ff6b] border border-[#42ff6b]/30">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 neu-inset-sm text-xs font-medium text-[#42ff6b]">
                       <Building2 size={12} />
                       {tor.bidang.name}
                     </span>
                   )}
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono text-gray-300 bg-white/5 border border-white/10">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 neu-inset-sm text-xs font-mono text-gray-300">
                     <Hash size={11} className="text-gray-400" />
                     {tor.number || "DRAFT"}
                   </span>
@@ -218,7 +218,7 @@ export default async function TorDetailPage({ params }: PageProps) {
               {canEdit && (
                 <Link
                   href={`/tor/edit/${id}`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#42ff6b] text-black rounded-xl hover:bg-[#38e05c] font-semibold text-sm transition-all shadow-lg shadow-[#42ff6b]/20"
+                  className="neu-btn-accent inline-flex items-center gap-2 px-4 py-2.5 font-semibold text-sm"
                 >
                   <Edit size={17} />
                   Edit TOR
@@ -240,10 +240,10 @@ export default async function TorDetailPage({ params }: PageProps) {
           {/* Metadata Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-6">
             {/* Status Card */}
-            <div className="bg-[#2a2a2a]/70 border border-white/10 hover:border-white/20 rounded-xl p-4 transition-colors flex flex-col justify-between gap-3">
+            <div className="neu-card-sm p-4 flex flex-col justify-between gap-3">
               <div className="flex items-center justify-between text-xs font-medium text-gray-400 uppercase tracking-wider">
                 <span>Status Dokumen</span>
-                <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                <div className="w-8 h-8 neu-inset-sm flex items-center justify-center text-blue-400">
                   <Activity size={14} />
                 </div>
               </div>
@@ -263,10 +263,10 @@ export default async function TorDetailPage({ params }: PageProps) {
             </div>
 
             {/* Creator Card */}
-            <div className="bg-[#2a2a2a]/70 border border-white/10 hover:border-white/20 rounded-xl p-4 transition-colors flex flex-col justify-between gap-2">
+            <div className="neu-card-sm p-4 flex flex-col justify-between gap-2">
               <div className="flex items-center justify-between text-xs font-medium text-gray-400 uppercase tracking-wider">
                 <span>Creator</span>
-                <div className="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                <div className="w-8 h-8 neu-inset-sm flex items-center justify-center text-purple-400">
                   <User size={14} />
                 </div>
               </div>
@@ -284,10 +284,10 @@ export default async function TorDetailPage({ params }: PageProps) {
             </div>
 
             {/* Created Date Card */}
-            <div className="bg-[#2a2a2a]/70 border border-white/10 hover:border-white/20 rounded-xl p-4 transition-colors flex flex-col justify-between gap-2">
+            <div className="neu-card-sm p-4 flex flex-col justify-between gap-2">
               <div className="flex items-center justify-between text-xs font-medium text-gray-400 uppercase tracking-wider">
                 <span>Created</span>
-                <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                <div className="w-8 h-8 neu-inset-sm flex items-center justify-center text-amber-400">
                   <Calendar size={14} />
                 </div>
               </div>
@@ -304,10 +304,10 @@ export default async function TorDetailPage({ params }: PageProps) {
             </div>
 
             {/* Budget Card */}
-            <div className="bg-[#2a2a2a]/70 border border-[#42ff6b]/20 hover:border-[#42ff6b]/40 rounded-xl p-4 transition-colors flex flex-col justify-between gap-2">
+            <div className="neu-card-sm p-4 flex flex-col justify-between gap-2">
               <div className="flex items-center justify-between text-xs font-medium text-gray-400 uppercase tracking-wider">
                 <span>Budget</span>
-                <div className="w-7 h-7 rounded-lg bg-[#42ff6b]/10 border border-[#42ff6b]/30 flex items-center justify-center text-[#42ff6b]">
+                <div className="w-8 h-8 neu-inset-sm flex items-center justify-center text-[#42ff6b]">
                   <Wallet size={14} />
                 </div>
               </div>
@@ -358,7 +358,7 @@ export default async function TorDetailPage({ params }: PageProps) {
               } gap-6 items-start`}
             >
               {showApprovalProgress && (
-                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div className="neu-card p-6">
                   <ApprovalProgressBar
                     workflowSteps={workflowSteps}
                     currentStepNumber={tor.currentStepNumber || 0}
@@ -369,7 +369,7 @@ export default async function TorDetailPage({ params }: PageProps) {
               )}
 
               {showApprovalHistory && (
-                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div className="neu-card p-6">
                   <ApprovalHistoryTimeline history={tor.history} />
                 </div>
               )}

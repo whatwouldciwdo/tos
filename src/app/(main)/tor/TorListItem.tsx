@@ -87,9 +87,9 @@ export default function TorListItem({ tor, isCreator, view, workflowSteps = [] }
   return (
     <Link
       href={`/tor/${tor.id}`}
-      className="block bg-[#1f1f1f] border border-[#333] rounded-xl hover:border-[#42ff6b] hover:shadow-lg hover:shadow-[#42ff6b]/10 transition-all duration-200 overflow-hidden group"
+      className="block neu-card-interactive overflow-hidden group"
     >
-      <div className="p-5">
+      <div className="p-6">
         {/* Header */}
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
@@ -114,27 +114,27 @@ export default function TorListItem({ tor, isCreator, view, workflowSteps = [] }
         </div>
 
         {/* Metadata */}
-        <div className="flex flex-wrap gap-4 text-xs text-gray-400 mb-4">
-          <div className="flex items-center gap-1.5">
-            <TrendingUp size={14} className="text-[#42ff6b]" />
+        <div className="flex flex-wrap gap-2.5 text-xs text-gray-300 mb-4">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 neu-inset-sm">
+            <TrendingUp size={13} className="text-[#42ff6b]" />
             <span>{tor.bidang?.name || "-"}</span>
           </div>
           
           {view === "approve" && (
-            <div className="flex items-center gap-1.5">
-              <User size={14} className="text-[#42ff6b]" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 neu-inset-sm">
+              <User size={13} className="text-[#42ff6b]" />
               <span>{tor.creator?.name || "-"}</span>
             </div>
           )}
           
-          <div className="flex items-center gap-1.5">
-            <Calendar size={14} className="text-[#42ff6b]" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 neu-inset-sm">
+            <Calendar size={13} className="text-[#42ff6b]" />
             <span>{new Date(tor.createdAt).toLocaleDateString("id-ID")}</span>
           </div>
 
           {tor.budgetAmount && (
-            <div className="flex items-center gap-1.5 font-medium text-[#42ff6b]">
-              <DollarSign size={14} />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 neu-inset-sm font-semibold text-[#42ff6b]">
+              <DollarSign size={13} />
               <span>
                 {new Intl.NumberFormat("id-ID", {
                   style: "currency",
@@ -148,7 +148,7 @@ export default function TorListItem({ tor, isCreator, view, workflowSteps = [] }
 
         {/* Progress Bar - only show if not DRAFT */}
         {tor.statusStage !== "DRAFT" && workflowSteps.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-[#333]">
+          <div className="mt-4 p-4 neu-inset">
             <ApprovalProgressBar
               workflowSteps={workflowSteps}
               currentStepNumber={tor.currentStepNumber || 0}
@@ -160,11 +160,11 @@ export default function TorListItem({ tor, isCreator, view, workflowSteps = [] }
 
         {/* Action Buttons */}
         {view === "mine" && isCreator && tor.statusStage === "DRAFT" && (
-          <div className="mt-4 pt-4 border-t border-[#333] flex gap-2">
+          <div className="mt-4 pt-4 border-t border-white/5 flex gap-3">
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex-1 sm:flex-initial px-4 py-2 bg-[#42ff6b] text-black text-sm font-medium rounded-lg hover:bg-[#38e05c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors shadow-lg shadow-[#42ff6b]/20"
+              className="flex-1 sm:flex-initial px-4 py-2 neu-btn-accent text-sm font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <Send size={16} />
               {submitting ? "Submitting..." : "Submit for Approval"}
@@ -172,7 +172,7 @@ export default function TorListItem({ tor, isCreator, view, workflowSteps = [] }
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
+              className="px-4 py-2 neu-btn text-red-400 hover:text-red-300 text-sm font-medium rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               title="Delete ToR"
             >
               <Trash2 size={16} />

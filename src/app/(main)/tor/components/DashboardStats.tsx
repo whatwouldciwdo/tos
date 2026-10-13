@@ -49,25 +49,25 @@ export default function DashboardStats({ stats, className = "" }: DashboardStats
   ];
 
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ${className}`}>
+    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 ${className}`}>
       {statCards.map((card, index) => {
         const Icon = card.icon;
         return (
           <div
             key={index}
-            className={`p-4 rounded-lg border-2 ${card.border} ${card.bg} transition-all hover:shadow-lg hover:scale-105 cursor-default backdrop-blur-sm`}
+            className="p-5 neu-card-sm cursor-default"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className={`text-xs font-medium ${card.color} opacity-80`}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
                   {card.label}
                 </p>
-                <p className={`text-3xl font-bold mt-1 ${card.color}`}>
+                <p className={`text-3xl font-bold mt-2 ${card.color}`}>
                   {card.value}
                 </p>
               </div>
-              <div className={`p-3 rounded-full ${card.bg}`}>
-                <Icon size={24} className={card.color} />
+              <div className="w-12 h-12 rounded-2xl neu-inset-sm flex items-center justify-center">
+                <Icon size={22} className={card.color} />
               </div>
             </div>
           </div>

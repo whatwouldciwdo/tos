@@ -307,10 +307,10 @@ export default function AdminAuditLogsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#262626] text-white px-6 py-10 md:px-12">
+    <div className="min-h-screen neu-bg text-white px-6 py-10 md:px-12">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
-        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <header className="neu-card p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Link
@@ -334,22 +334,20 @@ export default function AdminAuditLogsPage() {
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/admin/bidang"
-              className="text-xs text-[#42ff6b] hover:underline"
+              className="neu-btn px-3.5 py-2 text-xs text-gray-200 hover:text-[#42ff6b]"
             >
               Master Bidang
             </Link>
-            <span className="text-gray-600">|</span>
             <Link
               href="/admin/positions"
-              className="text-xs text-[#42ff6b] hover:underline"
+              className="neu-btn px-3.5 py-2 text-xs text-gray-200 hover:text-[#42ff6b]"
             >
               Master Jabatan
             </Link>
-            <span className="text-gray-600">|</span>
             <button
               onClick={handleExportCSV}
               disabled={exporting || loading || logs.length === 0}
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#42ff6b] px-4 py-2 text-xs font-semibold text-black hover:bg-[#39e05d] transition disabled:opacity-50 cursor-pointer"
+              className="neu-btn-accent inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold disabled:opacity-50 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               {exporting ? "Mengekspor..." : "Ekspor CSV"}
@@ -358,40 +356,40 @@ export default function AdminAuditLogsPage() {
         </header>
 
         {/* Stats Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-[#1f1f1f] border border-[#42ff6b]/30 rounded-xl p-4 flex items-center justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="neu-card-sm p-5 flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-400 uppercase tracking-wider">Total Percobaan</p>
               <p className="text-2xl font-bold mt-1 text-white">{stats.totalFiltered}</p>
             </div>
-            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-300">
+            <div className="w-11 h-11 neu-inset-sm flex items-center justify-center text-gray-300">
               <Clock className="w-5 h-5" />
             </div>
           </div>
 
-          <div className="bg-[#1f1f1f] border border-green-500/30 rounded-xl p-4 flex items-center justify-between">
+          <div className="neu-card-sm p-5 flex items-center justify-between">
             <div>
-              <p className="text-xs text-green-400 uppercase tracking-wider">Login Berhasil</p>
-              <p className="text-2xl font-bold mt-1 text-green-400">{stats.totalSuccess}</p>
+              <p className="text-xs text-[#42ff6b] uppercase tracking-wider">Login Berhasil</p>
+              <p className="text-2xl font-bold mt-1 text-[#42ff6b]">{stats.totalSuccess}</p>
             </div>
-            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
+            <div className="w-11 h-11 neu-inset-sm flex items-center justify-center text-[#42ff6b]">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
 
-          <div className="bg-[#1f1f1f] border border-red-500/30 rounded-xl p-4 flex items-center justify-between">
+          <div className="neu-card-sm p-5 flex items-center justify-between">
             <div>
               <p className="text-xs text-red-400 uppercase tracking-wider">Login Gagal</p>
               <p className="text-2xl font-bold mt-1 text-red-400">{stats.totalFailed}</p>
             </div>
-            <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-400">
+            <div className="w-11 h-11 neu-inset-sm flex items-center justify-center text-red-400">
               <AlertTriangle className="w-5 h-5" />
             </div>
           </div>
         </div>
 
         {/* Filters Section */}
-        <section className="bg-[#1f1f1f] border border-[#42ff6b]/40 rounded-2xl p-5 shadow-lg space-y-4">
+        <section className="neu-card p-6 space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="text-sm font-semibold flex items-center gap-2 text-[#42ff6b]">
               <Filter className="w-4 h-4" />
@@ -399,41 +397,41 @@ export default function AdminAuditLogsPage() {
             </h2>
 
             {/* Quick Presets */}
-            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
               <span className="text-gray-400 mr-1 text-[11px]">Preset Tanggal:</span>
               <button
                 onClick={() => applyPreset("today")}
-                className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-[#42ff6b]/20 hover:text-[#42ff6b] transition text-[11px]"
+                className="neu-btn px-2.5 py-1 text-[11px] text-gray-300 hover:text-[#42ff6b]"
               >
                 Hari Ini
               </button>
               <button
                 onClick={() => applyPreset("yesterday")}
-                className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-[#42ff6b]/20 hover:text-[#42ff6b] transition text-[11px]"
+                className="neu-btn px-2.5 py-1 text-[11px] text-gray-300 hover:text-[#42ff6b]"
               >
                 Kemarin
               </button>
               <button
                 onClick={() => applyPreset("last7")}
-                className="px-2.5 py-1 rounded-md bg-[#42ff6b]/10 text-[#42ff6b] border border-[#42ff6b]/30 hover:bg-[#42ff6b]/20 transition text-[11px]"
+                className="neu-btn px-2.5 py-1 text-[11px] text-[#42ff6b] border border-[#42ff6b]/30"
               >
                 7 Hari
               </button>
               <button
                 onClick={() => applyPreset("last30")}
-                className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-[#42ff6b]/20 hover:text-[#42ff6b] transition text-[11px]"
+                className="neu-btn px-2.5 py-1 text-[11px] text-gray-300 hover:text-[#42ff6b]"
               >
                 30 Hari
               </button>
               <button
                 onClick={() => applyPreset("thisMonth")}
-                className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-[#42ff6b]/20 hover:text-[#42ff6b] transition text-[11px]"
+                className="neu-btn px-2.5 py-1 text-[11px] text-gray-300 hover:text-[#42ff6b]"
               >
                 Bulan Ini
               </button>
               <button
                 onClick={() => applyPreset("all")}
-                className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-[#42ff6b]/20 hover:text-[#42ff6b] transition text-[11px]"
+                className="neu-btn px-2.5 py-1 text-[11px] text-gray-300 hover:text-[#42ff6b]"
               >
                 Semua
               </button>
@@ -442,7 +440,7 @@ export default function AdminAuditLogsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 pt-2">
             {/* Start Date */}
-            <div className="md:col-span-3 space-y-1">
+            <div className="md:col-span-3 space-y-1.5">
               <label className="text-xs text-gray-300 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-[#42ff6b]" />
                 Dari Tanggal
@@ -454,12 +452,12 @@ export default function AdminAuditLogsPage() {
                   setStartDate(e.target.value);
                   setPage(1);
                 }}
-                className="w-full rounded-lg border border-[#42ff6b]/40 bg-[#262626] px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-[#42ff6b] [color-scheme:dark]"
+                className="w-full neu-inset-sm px-3 py-2 text-xs text-white outline-none [color-scheme:dark]"
               />
             </div>
 
             {/* End Date */}
-            <div className="md:col-span-3 space-y-1">
+            <div className="md:col-span-3 space-y-1.5">
               <label className="text-xs text-gray-300 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-[#42ff6b]" />
                 Sampai Tanggal
@@ -471,12 +469,12 @@ export default function AdminAuditLogsPage() {
                   setEndDate(e.target.value);
                   setPage(1);
                 }}
-                className="w-full rounded-lg border border-[#42ff6b]/40 bg-[#262626] px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-[#42ff6b] [color-scheme:dark]"
+                className="w-full neu-inset-sm px-3 py-2 text-xs text-white outline-none [color-scheme:dark]"
               />
             </div>
 
             {/* Status Filter */}
-            <div className="md:col-span-2 space-y-1">
+            <div className="md:col-span-2 space-y-1.5">
               <label className="text-xs text-gray-300">Status</label>
               <select
                 value={status}
@@ -484,7 +482,7 @@ export default function AdminAuditLogsPage() {
                   setStatus(e.target.value);
                   setPage(1);
                 }}
-                className="w-full rounded-lg border border-[#42ff6b]/40 bg-[#262626] px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-[#42ff6b]"
+                className="w-full neu-inset-sm px-3 py-2 text-xs text-white outline-none bg-[#24272c]"
               >
                 <option value="ALL">Semua Status</option>
                 <option value="SUCCESS">Berhasil (SUCCESS)</option>
@@ -493,7 +491,7 @@ export default function AdminAuditLogsPage() {
             </div>
 
             {/* Search Input */}
-            <div className="md:col-span-3 space-y-1">
+            <div className="md:col-span-3 space-y-1.5">
               <label className="text-xs text-gray-300">Pencarian</label>
               <div className="relative">
                 <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-gray-400" />
@@ -505,7 +503,7 @@ export default function AdminAuditLogsPage() {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  className="w-full rounded-lg border border-[#42ff6b]/40 bg-[#262626] pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-[#42ff6b]"
+                  className="w-full neu-inset-sm pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 outline-none"
                 />
               </div>
             </div>
@@ -515,7 +513,7 @@ export default function AdminAuditLogsPage() {
               <button
                 onClick={handleResetFilters}
                 title="Reset Semua Filter"
-                className="w-full flex items-center justify-center gap-1 rounded-lg border border-gray-600 bg-white/5 py-2 text-xs text-gray-300 hover:bg-white/10 hover:text-white transition"
+                className="w-full neu-btn flex items-center justify-center gap-1 py-2 text-xs text-gray-300 hover:text-white"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span className="hidden md:inline">Reset</span>
@@ -525,11 +523,11 @@ export default function AdminAuditLogsPage() {
         </section>
 
         {/* Logs Table Section */}
-        <section className="bg-[#1f1f1f] border border-[#42ff6b]/40 rounded-2xl p-4 md:p-6 shadow-lg space-y-4">
+        <section className="neu-card p-5 md:p-7 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-semibold">Catatan Aktivitas Login</h2>
-              <span className="text-xs text-gray-400">
+              <span className="neu-inset-sm px-3 py-1 text-xs text-gray-400">
                 Menampilkan {logs.length} dari {stats.totalFiltered} aktivitas
               </span>
             </div>
@@ -543,7 +541,7 @@ export default function AdminAuditLogsPage() {
                   setLimit(Number(e.target.value));
                   setPage(1);
                 }}
-                className="rounded border border-gray-600 bg-[#262626] px-2 py-1 text-xs text-white outline-none"
+                className="neu-inset-sm bg-[#24272c] px-2.5 py-1 text-xs text-white outline-none"
               >
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -556,7 +554,7 @@ export default function AdminAuditLogsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b border-[#42ff6b]/40 text-xs uppercase text-gray-300">
+                <tr className="border-b border-white/10 text-xs uppercase text-gray-400">
                   <th className="py-3 pr-4 text-left">Waktu</th>
                   <th className="py-3 pr-4 text-left">Akun (Username)</th>
                   <th className="py-3 pr-4 text-left">Nama User / Jabatan</th>
@@ -597,7 +595,7 @@ export default function AdminAuditLogsPage() {
                     return (
                       <tr
                         key={log.id}
-                        className="border-b border-white/5 last:border-0 hover:bg-white/5 transition"
+                        className="border-b border-white/5 last:border-0 hover:bg-white/[0.03] transition"
                       >
                         {/* Waktu */}
                         <td className="py-3 pr-4 align-top text-xs text-gray-300 whitespace-nowrap">
@@ -606,7 +604,7 @@ export default function AdminAuditLogsPage() {
 
                         {/* Username */}
                         <td className="py-3 pr-4 align-top">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-xs font-semibold bg-[#42ff6b]/10 text-[#42ff6b] border border-[#42ff6b]/30">
+                          <span className="inline-flex items-center px-2.5 py-0.5 neu-inset-sm font-mono text-xs font-semibold text-[#42ff6b]">
                             @{log.username}
                           </span>
                         </td>
@@ -633,12 +631,12 @@ export default function AdminAuditLogsPage() {
                         {/* Status Badge */}
                         <td className="py-3 pr-4 align-top">
                           {isSuccess ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-green-500/15 text-green-400 border border-green-500/30">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 neu-inset-sm text-[11px] font-semibold text-[#42ff6b]">
                               <CheckCircle2 className="w-3 h-3" />
                               SUCCESS
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-red-500/15 text-red-400 border border-red-500/30">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 neu-inset-sm text-[11px] font-semibold text-red-400">
                               <XCircle className="w-3 h-3" />
                               FAILED
                             </span>
@@ -691,13 +689,13 @@ export default function AdminAuditLogsPage() {
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-600 bg-white/5 hover:bg-white/10 text-white disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  className="neu-btn inline-flex items-center gap-1 px-3 py-1.5 text-white disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Sebelumnya
                 </button>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum = i + 1;
                     if (totalPages > 5 && page > 3) {
@@ -710,10 +708,10 @@ export default function AdminAuditLogsPage() {
                       <button
                         key={pageNum}
                         onClick={() => setPage(pageNum)}
-                        className={`w-7 h-7 rounded-lg text-xs font-semibold transition ${
+                        className={`w-8 h-8 rounded-lg text-xs font-semibold transition ${
                           page === pageNum
-                            ? "bg-[#42ff6b] text-black"
-                            : "border border-gray-600 bg-white/5 text-gray-300 hover:bg-white/10"
+                            ? "neu-btn-accent"
+                            : "neu-btn text-gray-300"
                         }`}
                       >
                         {pageNum}
@@ -725,7 +723,7 @@ export default function AdminAuditLogsPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-600 bg-white/5 hover:bg-white/10 text-white disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  className="neu-btn inline-flex items-center gap-1 px-3 py-1.5 text-white disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Selanjutnya
                   <ChevronRight className="w-4 h-4" />

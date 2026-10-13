@@ -694,14 +694,12 @@ export default function TorFormLayout({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
+    <div className={isViewOnly ? "text-white" : "min-h-screen neu-bg px-6 py-10 text-white"}>
       <div className="max-w-7xl mx-auto space-y-6">
-
-
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
-          <h1 className="text-3xl font-semibold text-gray-900">
-            {isViewOnly ? "Detail TOR" : torId ? "Edit TOR" : "Create New TOR"}
+          <h1 className="text-2xl md:text-3xl font-bold text-white">
+            {isViewOnly ? "Detail Dokumen TOR" : torId ? "Edit TOR" : "Create New TOR"}
           </h1>
           {/* Presence indicator — hanya tampil jika ada torId (mode edit) */}
           {torId && (
@@ -715,83 +713,87 @@ export default function TorFormLayout({
         </div>
 
         {/* Info Card */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-          <div className="flex justify-between items-start">
-            <div className="space-y-2">
-              <div className="text-sm text-gray-500">Nomor TOR</div>
-              <div className="text-2xl font-bold text-blue-600">
-                {formData.number || "TOR-XXXX-XXX"}
+        {!isViewOnly && (
+          <div className="neu-card p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+              <div className="space-y-2">
+                <div className="text-xs uppercase tracking-wider text-gray-400">Nomor TOR</div>
+                <div className="text-2xl font-bold text-[#42ff6b]">
+                  {formData.number || "TOR-XXXX-XXX"}
+                </div>
+                <div className="text-lg font-medium text-gray-100">{formData.program || formData.title || "Untitled"}</div>
+                <div className="text-sm text-gray-400">
+                  Bidang: {bidangName || "-"} | Creator: {creatorName || "-"}
+                </div>
               </div>
-              <div className="text-lg text-gray-700">{formData.program || formData.title || "Untitled"}</div>
-              <div className="text-sm text-gray-500">
-                Bidang: {bidangName || "-"} | Creator: {creatorName || "-"}
+
+              <div className="sm:text-right space-y-2">
+                <div className="inline-block px-3.5 py-1 neu-inset-sm text-[#42ff6b] text-xs font-semibold">
+                  STATUS: {formData.statusStage || "DRAFT"}
+                </div>
+                <div className="text-sm text-gray-300">
+                  Tgl Pembuatan: {formatDate(formData.creationDate)}
+                </div>
+                <div className="text-sm text-gray-300">
+                  Nilai Anggaran: <span className="text-[#42ff6b] font-semibold">{formatCurrency(formData.budgetAmount || undefined, formData.budgetCurrency || undefined)}</span>
+                </div>
+                {/* Only show Export button when user has EXPORT role */}
+                {!isViewOnly && hasExportRole && (
+                  <button
+                    type="button"
+                    onClick={handleExport}
+                    disabled={!torId || isExporting}
+                    className="mt-2 px-4 py-2 neu-btn-accent text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 sm:ml-auto"
+                  >
+                    {isExporting ? (
+                      <>
+                        <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                        </svg>
+                        Exporting...
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <polyline points="7 10 12 15 17 10" />
+                          <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Export Word
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 
-            <div className="text-right space-y-2">
-              <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                STATUS: {formData.statusStage || "DRAFT"}
+            {lastSaved && (
+              <div className="mt-4 text-xs text-gray-400 flex items-center gap-2">
+                <span className="inline-block w-2 h-2 bg-[#42ff6b] rounded-full animate-pulse"></span>
+                Last saved: {lastSaved.toLocaleTimeString()}
               </div>
-              <div className="text-sm text-gray-600">
-                Tgl Pembuatan: {formatDate(formData.creationDate)}
-              </div>
-              <div className="text-sm text-gray-600">
-                Nilai Anggaran: {formatCurrency(formData.budgetAmount || undefined, formData.budgetCurrency || undefined)}
-              </div>
-              {/* Only show Export button when user has EXPORT role */}
-              {!isViewOnly && hasExportRole && (
-                <button
-                  type="button"
-                  onClick={handleExport}
-                  disabled={!torId || isExporting}
-                  className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ml-auto"
-                >
-                  {isExporting ? (
-                    <>
-                      <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                      Exporting...
-                    </>
-                  ) : (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                      </svg>
-                      Export Word
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
+            )}
           </div>
-
-          {lastSaved && (
-            <div className="mt-4 text-xs text-gray-500 flex items-center gap-2">
-              <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Last saved: {lastSaved.toLocaleTimeString()}
-            </div>
-          )}
-        </div>
+        )}
 
         {/* Field Comments / Revision Summary Banner */}
         {(fieldComments.length > 0 || canComment) && (
-          <div className="bg-amber-50/90 border border-amber-300 rounded-lg p-4 shadow-sm">
+          <div className="neu-card border border-amber-500/30 p-5">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <MessageSquare size={18} className="text-amber-600 shrink-0" />
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 neu-inset-sm flex items-center justify-center text-amber-400 shrink-0">
+                  <MessageSquare size={18} />
+                </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-amber-950">
+                  <h3 className="text-sm font-semibold text-amber-300">
                     Komentar & Catatan Revisi per Field{" "}
                     {fieldComments.length > 0 && (
-                      <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-200 text-amber-900">
+                      <span className="ml-1.5 inline-flex items-center px-2.5 py-0.5 neu-inset-sm text-xs font-medium text-amber-300">
                         {unresolvedComments.length} perlu revisi / {fieldComments.length} total
                       </span>
                     )}
                   </h3>
-                  <p className="text-xs text-amber-800 mt-0.5">
+                  <p className="text-xs text-gray-300 mt-0.5">
                     {canComment
                       ? "Klik tombol (+) di sebelah kanan setiap field untuk menambahkan komentar atau catatan revisi. Semua komentar akan terangkum otomatis saat Anda menekan tombol Revisi."
                       : "Klik pada daftar komentar di bawah untuk langsung menuju ke field yang perlu direvisi."}
@@ -803,7 +805,7 @@ export default function TorFormLayout({
                 <button
                   type="button"
                   onClick={() => setShowCommentsSummary((prev) => !prev)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-amber-900 bg-white/80 hover:bg-white border border-amber-300 rounded-md shrink-0"
+                  className="neu-btn inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-amber-300 shrink-0"
                 >
                   {showCommentsSummary ? (
                     <>
@@ -819,27 +821,27 @@ export default function TorFormLayout({
             </div>
 
             {showCommentsSummary && fieldComments.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-amber-200 grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+              <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
                 {fieldComments.map((item) => (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => jumpToFieldComment(item)}
-                    className={`text-left p-2.5 rounded-md border transition flex flex-col gap-1 ${
+                    className={`text-left p-3 neu-card-sm border transition flex flex-col gap-1 ${
                       item.resolved
-                        ? "bg-emerald-50/80 border-emerald-200 hover:bg-emerald-100/70"
-                        : "bg-white border-amber-300 hover:bg-amber-100/50"
+                        ? "border-emerald-500/30 hover:border-emerald-400/50"
+                        : "border-amber-500/30 hover:border-amber-400/50"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-semibold text-gray-900 truncate">
+                      <span className="text-xs font-semibold text-white truncate">
                         [{item.tabLabel}] {item.fieldLabel}
                       </span>
                       <span
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${
+                        className={`px-2 py-0.5 neu-inset-sm text-[10px] font-medium shrink-0 ${
                           item.resolved
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-amber-100 text-amber-900"
+                            ? "text-[#42ff6b]"
+                            : "text-amber-300"
                         }`}
                       >
                         {item.resolved ? "✓ Selesai" : "Perlu Revisi"}
@@ -847,7 +849,7 @@ export default function TorFormLayout({
                     </div>
                     <p
                       className={`text-xs line-clamp-2 ${
-                        item.resolved ? "line-through text-gray-500" : "text-gray-700"
+                        item.resolved ? "line-through text-gray-500" : "text-gray-200"
                       }`}
                     >
                       {item.comment}
@@ -863,7 +865,7 @@ export default function TorFormLayout({
         )}
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 overflow-x-auto">
+        <div className="neu-inset p-2 flex gap-2 overflow-x-auto">
           {tabs.map((tab) => {
             const tabComments = fieldComments.filter((c) => c.tabId === tab.id);
             const tabUnresolved = tabComments.filter((c) => !c.resolved).length;
@@ -879,10 +881,10 @@ export default function TorFormLayout({
                   setIsChangingTab(false);
                 }}
                 disabled={isChangingTab}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 ${
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 ${
                   activeTab === tab.id
-                    ? "bg-gray-900 text-white"
-                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                    ? "neu-btn-accent font-semibold"
+                    : "text-gray-300 hover:text-white hover:bg-white/5"
                 }`}
               >
                 {isChangingTab ? (
@@ -898,7 +900,7 @@ export default function TorFormLayout({
                     className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold ${
                       tabUnresolved > 0
                         ? "bg-amber-500 text-white"
-                        : "bg-emerald-500 text-white"
+                        : "bg-emerald-600 text-white"
                     }`}
                   >
                     {tabUnresolved > 0 ? tabUnresolved : tabComments.length}
@@ -910,7 +912,7 @@ export default function TorFormLayout({
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm min-h-[500px]">
+        <div className="neu-form-scope bg-[#eef2f7] text-gray-900 rounded-2xl border border-white/20 shadow-[9px_9px_20px_#16181b,-9px_-9px_20px_#32363d] min-h-[500px]">
           {activeTab !== "informasi-umum" && !isViewOnly && (
             <div className="flex justify-end p-4 pb-0">
               <button
@@ -930,10 +932,10 @@ export default function TorFormLayout({
                   }
                 }}
                 disabled={isReloading}
-                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`px-4 py-2 rounded-xl flex items-center gap-2 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed ${
                   tabEditingState[activeTab]
-                    ? "bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
+                    ? "bg-red-100 text-red-700 hover:bg-red-200 border border-red-300 shadow-sm"
+                    : "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
                 }`}
               >
                 {isReloading ? (
@@ -996,7 +998,7 @@ export default function TorFormLayout({
           <div className="flex justify-between items-center mt-6">
             <button
               onClick={() => router.push("/tor")}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="neu-btn px-6 py-2.5 text-gray-300 hover:text-white font-medium"
             >
               Cancel
             </button>
@@ -1006,10 +1008,10 @@ export default function TorFormLayout({
                 <button
                   onClick={() => handleSave(false)}
                   disabled={isSaving}
-                  className={`px-6 py-2 rounded-lg text-white transition-all duration-200 disabled:opacity-50 ${
+                  className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 ${
                     hasUnsavedChanges
-                      ? "bg-green-600 hover:bg-green-700 shadow-md"
-                      : "bg-gray-600 hover:bg-gray-700"
+                      ? "neu-btn-accent"
+                      : "neu-btn text-gray-300"
                   }`}
                 >
                   {isSaving ? "Saving..." : "Save Draft"}
@@ -1019,10 +1021,10 @@ export default function TorFormLayout({
                 <button
                   onClick={() => handleSave(false)}
                   disabled={isSaving}
-                  className={`px-6 py-2 rounded-lg text-white transition-all duration-200 disabled:opacity-50 ${
+                  className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 ${
                     hasUnsavedChanges
-                      ? "bg-green-600 hover:bg-green-700 shadow-md"
-                      : "bg-gray-600 hover:bg-gray-700"
+                      ? "neu-btn-accent"
+                      : "neu-btn text-gray-300"
                   }`}
                 >
                   {isSaving ? "Saving..." : "Save Draft"}
@@ -1033,7 +1035,7 @@ export default function TorFormLayout({
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="neu-btn px-6 py-2.5 text-blue-400 border border-blue-500/40 font-semibold disabled:opacity-50"
                 >
                   {submitting ? "Submitting..." : "Submit for Approval"}
                 </button>

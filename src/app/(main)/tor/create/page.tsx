@@ -125,7 +125,7 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
     } as any as TorFormData;
 
     return (
-      <div className="min-h-screen flex bg-[#262626]">
+      <div className="min-h-screen flex neu-bg">
         <Sidebar
           userName={dbUser.name}
           isSuperAdmin={isSuperAdmin}
@@ -153,7 +153,7 @@ export default async function CreateTorPage({ searchParams }: PageProps) {
 
   // Creating new ToR
   return (
-    <div className="min-h-screen flex bg-[#262626]">
+    <div className="min-h-screen flex neu-bg">
       <Sidebar
         userName={dbUser.name}
         isSuperAdmin={isSuperAdmin}

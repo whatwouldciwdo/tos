@@ -21,7 +21,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen flex bg-[#262626] text-white">
+    <div className="min-h-screen flex neu-bg text-white">
       <Sidebar
         userName={user.name || "Super Admin"}
         userEmail={user.email || ""}

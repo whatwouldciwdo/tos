@@ -348,3 +348,150 @@ input[type="password"]:-webkit-autofill {
 .animate-gradient {
   animation: gradient 3s ease infinite;
 }
+
+/* ============================================
+   NEUMORPHISM DESIGN SYSTEM (DARK & TACTILE)
+   ============================================ */
+
+.neu-bg {
+  background-color: #24272c;
+  color: #f3f4f6;
+}
+
+/* Extruded 3D Dark Card */
+.neu-card {
+  background: linear-gradient(145deg, #292c32, #202328);
+  box-shadow: 9px 9px 18px #17191c, -9px -9px 18px #31353c;
+  border: 1px solid rgba(255, 255, 255, 0.045);
+  border-radius: 1.125rem;
+}
+
+.neu-card-interactive {
+  background: linear-gradient(145deg, #292c32, #202328);
+  box-shadow: 8px 8px 16px #17191c, -8px -8px 16px #31353c;
+  border: 1px solid rgba(255, 255, 255, 0.045);
+  border-radius: 1.125rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neu-card-interactive:hover {
+  box-shadow: 11px 11px 22px #15171a, -11px -11px 22px #33373f, 0 0 18px rgba(66, 255, 107, 0.12);
+  border-color: rgba(66, 255, 107, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Medium / Small Extruded 3D Dark Card */
+.neu-card-sm {
+  background: linear-gradient(145deg, #2a2d33, #202328);
+  box-shadow: 6px 6px 12px #17191c, -6px -6px 12px #31353c;
+  border: 1px solid rgba(255, 255, 255, 0.045);
+  border-radius: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.neu-card-sm:hover {
+  box-shadow: 7px 7px 15px #15171a, -7px -7px 15px #333840;
+  border-color: rgba(66, 255, 107, 0.25);
+}
+
+/* Recessed / Carved 3D Dark Well (Inputs, Tracks, Containers) */
+.neu-inset {
+  background: #1f2227;
+  box-shadow: inset 5px 5px 10px #15171b, inset -5px -5px 10px #2b2f36;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 0.875rem;
+}
+
+.neu-inset-sm {
+  background: #202328;
+  box-shadow: inset 3px 3px 7px #16181b, inset -3px -3px 7px #2c3037;
+  border: 1px solid rgba(255, 255, 255, 0.035);
+  border-radius: 0.75rem;
+}
+
+/* Tactile Dark 3D Button */
+.neu-btn {
+  background: linear-gradient(145deg, #2a2e34, #212429);
+  box-shadow: 5px 5px 10px #16181c, -5px -5px 10px #32363e;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.neu-btn:hover:not(:disabled) {
+  box-shadow: 6px 6px 13px #141619, -6px -6px 13px #343942, 0 0 12px rgba(66, 255, 107, 0.18);
+  border-color: rgba(66, 255, 107, 0.45);
+  transform: translateY(-1px);
+}
+
+.neu-btn:active:not(:disabled),
+.neu-btn-active {
+  background: #202328;
+  box-shadow: inset 4px 4px 8px #15171b, inset -4px -4px 8px #2e323a;
+  border-color: rgba(66, 255, 107, 0.65);
+  transform: translateY(0);
+}
+
+/* Tactile Neon Green Accent 3D Button */
+.neu-btn-accent {
+  background: linear-gradient(145deg, #4bff76, #37de5b);
+  color: #0a140d;
+  box-shadow: 5px 5px 12px #15171b, -4px -4px 10px #31353d, 0 0 16px rgba(66, 255, 107, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+}
+
+.neu-btn-accent:hover:not(:disabled) {
+  background: linear-gradient(145deg, #56ff7f, #3ce660);
+  box-shadow: 6px 6px 15px #141619, -5px -5px 12px #333840, 0 0 22px rgba(66, 255, 107, 0.4);
+  transform: translateY(-1px);
+}
+
+.neu-btn-accent:active:not(:disabled) {
+  box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.35), inset -3px -3px 7px rgba(255, 255, 255, 0.3);
+  transform: translateY(0);
+}
+
+/* Neumorphic Sidebar */
+.neu-sidebar {
+  background: linear-gradient(180deg, #26292f 0%, #202328 100%);
+  box-shadow: 8px 0 22px #14161a;
+  border-right: 1px solid rgba(66, 255, 107, 0.25);
+}
+
+/* Scoped Tactile Neumorphism for Form Workspace (TorFormLayout & Tabs) */
+.neu-form-scope {
+  background-color: #e6ebf2;
+  box-shadow: inset 6px 6px 14px #cfd5de, inset -6px -6px 14px #fdffff;
+  border-radius: 1.5rem;
+}
+
+.neu-form-scope .bg-white {
+  background: linear-gradient(145deg, #f2f6fc, #e4e9f0) !important;
+  box-shadow: 7px 7px 15px #c9d0da, -7px -7px 15px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.65) !important;
+  border-radius: 1rem;
+}
+
+.neu-form-scope input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.neu-form-scope select,
+.neu-form-scope textarea {
+  background-color: #e8edf4 !important;
+  box-shadow: inset 3px 3px 7px #c8cfd8, inset -3px -3px 7px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 0.75rem !important;
+  transition: all 0.2s ease;
+}
+
+.neu-form-scope input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+.neu-form-scope select:focus,
+.neu-form-scope textarea:focus {
+  box-shadow: inset 4px 4px 8px #c2c9d4, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(59, 130, 246, 0.35) !important;
+  outline: none !important;
+}
+
+.neu-form-scope .bg-\[\#cfe6ff\] {
+  background: linear-gradient(145deg, #d8eaff, #c3dcfa) !important;
+  box-shadow: 4px 4px 9px #c4ccd6, -4px -4px 9px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 0.75rem !important;
+}
