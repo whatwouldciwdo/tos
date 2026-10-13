@@ -453,6 +453,7 @@ export default function AdminAuditLogsPage() {
                   setPage(1);
                 }}
                 className="w-full neu-inset-sm px-3 py-2 text-xs text-white outline-none [color-scheme:dark]"
+                style={{ color: "#ffffff" }}
               />
             </div>
 
@@ -470,6 +471,7 @@ export default function AdminAuditLogsPage() {
                   setPage(1);
                 }}
                 className="w-full neu-inset-sm px-3 py-2 text-xs text-white outline-none [color-scheme:dark]"
+                style={{ color: "#ffffff" }}
               />
             </div>
 
@@ -483,6 +485,7 @@ export default function AdminAuditLogsPage() {
                   setPage(1);
                 }}
                 className="w-full neu-inset-sm px-3 py-2 text-xs text-white outline-none bg-[#24272c]"
+                style={{ color: "#ffffff" }}
               >
                 <option value="ALL">Semua Status</option>
                 <option value="SUCCESS">Berhasil (SUCCESS)</option>
@@ -503,7 +506,8 @@ export default function AdminAuditLogsPage() {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  className="w-full neu-inset-sm pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 outline-none"
+                  className="w-full neu-inset-sm pl-9 pr-3 py-2 text-xs text-white placeholder-gray-400 outline-none"
+                  style={{ color: "#ffffff" }}
                 />
               </div>
             </div>
@@ -542,6 +546,7 @@ export default function AdminAuditLogsPage() {
                   setPage(1);
                 }}
                 className="neu-inset-sm bg-[#24272c] px-2.5 py-1 text-xs text-white outline-none"
+                style={{ color: "#ffffff" }}
               >
                 <option value={10}>10</option>
                 <option value={25}>25</option>

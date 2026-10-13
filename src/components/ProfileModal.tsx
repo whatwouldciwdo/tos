@@ -104,16 +104,16 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
   return (
     <>
       {/* Main Modal */}
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
-        <div className="bg-[#1f1f1f] rounded-lg shadow-xl w-full max-w-md mx-4 border border-[#42ff6b]/30">
+      <div className="neu-modal fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] text-white">
+        <div className="neu-card w-full max-w-md mx-4">
           {/* Header */}
-          <div className="flex justify-between items-center p-6 border-b border-gray-700">
+          <div className="flex justify-between items-center p-6 border-b border-white/10">
             <h2 className="text-xl font-semibold text-white">Profile Settings</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white transition"
+              className="p-1.5 rounded-lg neu-btn text-gray-400 hover:text-white transition"
             >
-              <X size={24} />
+              <X size={20} />
             </button>
           </div>
 
@@ -121,83 +121,87 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
           <div className="p-6 space-y-4">
             {/* Error/Success Messages */}
             {error && (
-              <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded">
+              <div className="neu-inset-sm border border-red-500/40 text-red-300 px-4 py-2 text-sm">
                 {error}
               </div>
             )}
             {success && (
-              <div className="bg-green-500/20 border border-green-500 text-green-200 px-4 py-2 rounded">
+              <div className="neu-inset-sm border border-[#42ff6b]/40 text-[#42ff6b] px-4 py-2 text-sm">
                 {success}
               </div>
             )}
 
             {/* Read-only Fields */}
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">
                 Name
               </label>
               <input
                 type="text"
                 value={userData.name}
                 disabled
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white cursor-not-allowed opacity-60"
+                className="w-full px-3.5 py-2.5 neu-inset-sm text-gray-200 cursor-not-allowed text-sm"
+                style={{ color: "#e5e7eb" }}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">
                 Username
               </label>
               <input
                 type="text"
                 value={userData.username}
                 disabled
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white cursor-not-allowed opacity-60"
+                className="w-full px-3.5 py-2.5 neu-inset-sm text-gray-200 cursor-not-allowed text-sm"
+                style={{ color: "#e5e7eb" }}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">
                 Position
               </label>
               <input
                 type="text"
                 value={userData.position}
                 disabled
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white cursor-not-allowed opacity-60"
+                className="w-full px-3.5 py-2.5 neu-inset-sm text-gray-200 cursor-not-allowed text-sm"
+                style={{ color: "#e5e7eb" }}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">
                 Bidang
               </label>
               <input
                 type="text"
                 value={userData.bidang}
                 disabled
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white cursor-not-allowed opacity-60"
+                className="w-full px-3.5 py-2.5 neu-inset-sm text-gray-200 cursor-not-allowed text-sm"
+                style={{ color: "#e5e7eb" }}
               />
             </div>
 
             {/* Editable Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-gray-300 mb-1.5">
                 Email *
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 bg-[#2a2a2a] border border-[#42ff6b]/30 rounded-lg text-white focus:border-[#42ff6b] focus:ring-1 focus:ring-[#42ff6b] outline-none placeholder:text-gray-500"
-                style={{ color: 'white' }}
+                className="w-full px-3.5 py-2.5 neu-inset text-white focus:ring-1 focus:ring-[#42ff6b]/50 outline-none placeholder:text-gray-500 text-sm"
+                style={{ color: "#ffffff" }}
               />
             </div>
 
             {/* Password Change Section */}
-            <div className="pt-4 border-t border-gray-700">
+            <div className="pt-4 border-t border-white/10">
               <div className="flex items-center justify-between mb-4">
-                <label className="text-sm font-medium text-gray-400">
+                <label className="text-sm font-medium text-gray-300">
                   Change Password
                 </label>
                 <button
@@ -208,7 +212,7 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
                     setConfirmPassword("");
                     setError("");
                   }}
-                  className="text-sm text-[#42ff6b] hover:underline"
+                  className="text-sm text-[#42ff6b] hover:underline font-medium"
                 >
                   {isChangingPassword ? "Cancel" : "Change"}
                 </button>
@@ -218,7 +222,7 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
                 <div className="space-y-3">
                   {/* Current Password */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">
+                    <label className="block text-xs font-medium text-gray-300 mb-1.5">
                       Current Password *
                     </label>
                     <div className="relative">
@@ -226,8 +230,8 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
                         type={showCurrentPassword ? "text" : "password"}
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#2a2a2a] border border-[#42ff6b]/30 rounded-lg text-white focus:border-[#42ff6b] focus:ring-1 focus:ring-[#42ff6b] outline-none pr-10 placeholder:text-gray-500"
-                        style={{ color: 'white' }}
+                        className="w-full px-3.5 py-2.5 neu-inset text-white focus:ring-1 focus:ring-[#42ff6b]/50 outline-none pr-10 placeholder:text-gray-500 text-sm"
+                        style={{ color: "#ffffff" }}
                       />
                       <button
                         type="button"
@@ -241,7 +245,7 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
 
                   {/* New Password */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">
+                    <label className="block text-xs font-medium text-gray-300 mb-1.5">
                       New Password *
                     </label>
                     <div className="relative">
@@ -249,8 +253,8 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
                         type={showNewPassword ? "text" : "password"}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#2a2a2a] border border-[#42ff6b]/30 rounded-lg text-white focus:border-[#42ff6b] focus:ring-1 focus:ring-[#42ff6b] outline-none pr-10 placeholder:text-gray-500"
-                        style={{ color: 'white' }}
+                        className="w-full px-3.5 py-2.5 neu-inset text-white focus:ring-1 focus:ring-[#42ff6b]/50 outline-none pr-10 placeholder:text-gray-500 text-sm"
+                        style={{ color: "#ffffff" }}
                       />
                       <button
                         type="button"
@@ -264,7 +268,7 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
 
                   {/* Confirm Password */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">
+                    <label className="block text-xs font-medium text-gray-300 mb-1.5">
                       Confirm New Password *
                     </label>
                     <div className="relative">
@@ -272,8 +276,8 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
                         type={showConfirmPassword ? "text" : "password"}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#2a2a2a] border border-[#42ff6b]/30 rounded-lg text-white focus:border-[#42ff6b] focus:ring-1 focus:ring-[#42ff6b] outline-none pr-10 placeholder:text-gray-500"
-                        style={{ color: 'white' }}
+                        className="w-full px-3.5 py-2.5 neu-inset text-white focus:ring-1 focus:ring-[#42ff6b]/50 outline-none pr-10 placeholder:text-gray-500 text-sm"
+                        style={{ color: "#ffffff" }}
                       />
                       <button
                         type="button"
@@ -290,17 +294,17 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 p-6 border-t border-gray-700">
+          <div className="flex justify-end gap-3 p-6 border-t border-white/10">
             <button
               onClick={onClose}
-              className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 transition"
+              className="px-4 py-2 neu-btn text-gray-300 rounded-xl text-sm font-medium"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-4 py-2 bg-[#42ff6b] text-black rounded-lg hover:bg-[#38e05c] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              className="px-4 py-2 neu-btn-accent rounded-xl text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSaving ? "Saving..." : "Save Changes"}
             </button>
@@ -310,8 +314,8 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
 
       {/* Confirmation Dialog for Password Change */}
       {showConfirmDialog && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[110]">
-          <div className="bg-[#1f1f1f] rounded-lg shadow-xl w-full max-w-sm mx-4 border border-[#42ff6b]/30">
+        <div className="neu-modal fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[110] text-white">
+          <div className="neu-card w-full max-w-sm mx-4">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-white mb-2">Confirm Password Change</h3>
               <p className="text-gray-300 text-sm mb-6">
@@ -321,14 +325,14 @@ export default function ProfileModal({ isOpen, onClose, userData, onUpdate }: Pr
                 <button
                   onClick={() => setShowConfirmDialog(false)}
                   disabled={isSaving}
-                  className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 transition"
+                  className="px-4 py-2 neu-btn text-gray-300 rounded-xl text-sm font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={performUpdate}
                   disabled={isSaving}
-                  className="px-4 py-2 bg-[#42ff6b] text-black rounded-lg hover:bg-[#38e05c] transition disabled:opacity-50 font-medium"
+                  className="px-4 py-2 neu-btn-accent rounded-xl text-sm font-semibold disabled:opacity-50"
                 >
                   {isSaving ? "Changing..." : "Confirm"}
                 </button>

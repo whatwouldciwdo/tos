@@ -38,7 +38,7 @@ export function Modal({ isOpen, onClose, title, children, size = "md" }: ModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="neu-modal fixed inset-0 z-50 flex items-center justify-center p-4 text-white">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -47,16 +47,16 @@ export function Modal({ isOpen, onClose, title, children, size = "md" }: ModalPr
 
       {/* Modal */}
       <div
-        className={`relative bg-[#1f1f1f] rounded-2xl shadow-2xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden border border-[#333]`}
+        className={`relative neu-card ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between p-6 border-b border-[#333]">
+          <div className="flex items-center justify-between p-6 border-b border-white/10">
             <h2 className="text-xl font-semibold text-white">{title}</h2>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg hover:bg-[#333] transition-colors text-gray-400 hover:text-white"
+              className="p-1.5 rounded-lg neu-btn text-gray-400 hover:text-white"
             >
               <X size={20} />
             </button>
@@ -88,7 +88,7 @@ export function AlertModal({
   type = "info",
 }: AlertModalProps) {
   const icons = {
-    success: <CheckCircle size={48} className="text-green-500" />,
+    success: <CheckCircle size={48} className="text-[#42ff6b]" />,
     error: <AlertCircle size={48} className="text-red-500" />,
     warning: <AlertTriangle size={48} className="text-yellow-500" />,
     info: <Info size={48} className="text-blue-500" />,
@@ -111,7 +111,7 @@ export function AlertModal({
         <p className="text-gray-300 whitespace-pre-line">{message}</p>
         <button
           onClick={onClose}
-          className="w-full px-6 py-3 bg-[#42ff6b] text-black rounded-lg font-medium hover:bg-[#38e05c] transition-colors"
+          className="w-full px-6 py-3 neu-btn-accent rounded-xl font-semibold"
         >
           OK
         </button>
@@ -148,9 +148,9 @@ export function ConfirmModal({
   };
 
   const confirmButtonClasses = {
-    danger: "bg-red-600 hover:bg-red-700",
-    warning: "bg-yellow-600 hover:bg-yellow-700",
-    info: "bg-blue-600 hover:bg-blue-700",
+    danger: "neu-btn text-red-400 border border-red-500/40",
+    warning: "neu-btn text-yellow-400 border border-yellow-500/40",
+    info: "neu-btn-accent",
   };
 
   const handleConfirm = () => {
@@ -167,13 +167,13 @@ export function ConfirmModal({
         <div className="flex gap-3 pt-2">
           <button
             onClick={onClose}
-            className="flex-1 px-6 py-3 bg-[#333] text-white rounded-lg font-medium hover:bg-[#444] transition-colors"
+            className="flex-1 px-6 py-3 neu-btn text-gray-200 rounded-xl font-medium"
           >
             {cancelText}
           </button>
           <button
             onClick={handleConfirm}
-            className={`flex-1 px-6 py-3 text-white rounded-lg font-medium transition-colors ${confirmButtonClasses[type]}`}
+            className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-colors ${confirmButtonClasses[type]}`}
           >
             {confirmText}
           </button>
@@ -237,19 +237,20 @@ export function PromptModal({
           onChange={(e) => setValue(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder={placeholder}
-          className="w-full px-4 py-3 bg-[#2a2a2a] border border-[#444] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
+          className="w-full px-4 py-3 neu-inset text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#42ff6b]/50"
+          style={{ color: "#ffffff" }}
           autoFocus
         />
         <div className="flex gap-3 pt-2">
           <button
             onClick={onClose}
-            className="flex-1 px-6 py-3 bg-[#333] text-white rounded-lg font-medium hover:bg-[#444] transition-colors"
+            className="flex-1 px-6 py-3 neu-btn text-gray-200 rounded-xl font-medium"
           >
             {cancelText}
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 px-6 py-3 bg-[#42ff6b] text-black rounded-lg font-medium hover:bg-[#38e05c] transition-colors"
+            className="flex-1 px-6 py-3 neu-btn-accent rounded-xl font-semibold"
           >
             {confirmText}
           </button>

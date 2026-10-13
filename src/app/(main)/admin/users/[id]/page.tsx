@@ -57,16 +57,16 @@ export default async function EditUserPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#262626] text-white px-6 py-10 md:px-12">
+    <div className="min-h-screen neu-bg text-white px-6 py-10 md:px-12">
       <div className="max-w-3xl mx-auto space-y-6">
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold">Edit User</h1>
+        <header className="neu-card p-6 space-y-1">
+          <h1 className="text-2xl font-semibold text-white">Edit User</h1>
           <p className="text-xs text-gray-300">
             Perbarui informasi user. Kosongkan password jika tidak ingin diubah.
           </p>
         </header>
 
-        <section className="bg-[#1f1f1f] border border-[#42ff6b]/40 rounded-2xl p-4 md:p-6 shadow-lg">
+        <section className="neu-card p-6 md:p-8">
           <UserForm
             mode="edit"
             positions={positionOptions}

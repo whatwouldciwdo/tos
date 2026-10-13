@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #24272c;
+  --foreground: #f3f4f6;
 }
 
 @theme inline {
@@ -12,35 +12,65 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Ensure input text is visible - but allow override with inline styles */
-input:not([style*="color"]),
-textarea:not([style*="color"]),
-select:not([style*="color"]) {
-  color: #111827; /* gray-900 - only if no inline style */
+/* Dark Neumorphic Inputs, Selects & Textareas - Force bright white text */
+input.neu-inset,
+textarea.neu-inset,
+select.neu-inset,
+input.neu-inset-sm,
+textarea.neu-inset-sm,
+select.neu-inset-sm,
+.neu-modal input,
+.neu-modal textarea,
+.neu-modal select {
+  color: #ffffff !important;
+  caret-color: #42ff6b;
 }
 
-input:disabled, textarea:disabled, select:disabled {
-  color: #6b7280 !important; /* gray-500 */
+input.neu-inset::placeholder,
+textarea.neu-inset::placeholder,
+input.neu-inset-sm::placeholder,
+textarea.neu-inset-sm::placeholder,
+.neu-modal input::placeholder,
+.neu-modal textarea::placeholder {
+  color: #9ca3af !important;
+  opacity: 1;
 }
 
-/* Login page specific - force white text and override autofill */
-input[type="email"]:-webkit-autofill,
-input[type="password"]:-webkit-autofill {
-  -webkit-text-fill-color: white !important;
-  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+select.neu-inset option,
+select.neu-inset-sm option,
+.neu-modal select option {
+  background-color: #202328;
+  color: #ffffff;
+}
+
+input.neu-inset:disabled,
+textarea.neu-inset:disabled,
+select.neu-inset:disabled,
+input.neu-inset-sm:disabled,
+textarea.neu-inset-sm:disabled,
+select.neu-inset-sm:disabled,
+.neu-modal input:disabled,
+.neu-modal textarea:disabled,
+.neu-modal select:disabled {
+  color: #d1d5db !important;
+}
+
+/* Override browser autofill on dark inputs (text, email, password) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #42ff6b !important;
+  -webkit-box-shadow: 0 0 0px 1000px #1f2227 inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -434,7 +464,7 @@ input[type="password"]:-webkit-autofill {
 /* Tactile Neon Green Accent 3D Button */
 .neu-btn-accent {
   background: linear-gradient(145deg, #4bff76, #37de5b);
-  color: #0a140d;
+  color: #0a140d !important;
   box-shadow: 5px 5px 12px #15171b, -4px -4px 10px #31353d, 0 0 16px rgba(66, 255, 107, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.25);
   transition: all 0.2s ease;
@@ -461,30 +491,61 @@ input[type="password"]:-webkit-autofill {
 /* Scoped Tactile Neumorphism for Form Workspace (TorFormLayout & Tabs) */
 .neu-form-scope {
   background-color: #e6ebf2;
+  color: #111827;
   box-shadow: inset 6px 6px 14px #cfd5de, inset -6px -6px 14px #fdffff;
   border-radius: 1.5rem;
 }
 
-.neu-form-scope .bg-white {
-  background: linear-gradient(145deg, #f2f6fc, #e4e9f0) !important;
-  box-shadow: 7px 7px 15px #c9d0da, -7px -7px 15px #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.65) !important;
-  border-radius: 1rem;
+/* Ensure all inputs, selects, textareas, tables & editors inside .neu-form-scope (except modals) have high-contrast dark text */
+.neu-form-scope input:not(.neu-modal *),
+.neu-form-scope select:not(.neu-modal *),
+.neu-form-scope textarea:not(.neu-modal *) {
+  color: #111827 !important;
+  caret-color: #111827;
 }
 
-.neu-form-scope input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-.neu-form-scope select,
-.neu-form-scope textarea {
+.neu-form-scope input:not(.neu-modal *)::placeholder,
+.neu-form-scope textarea:not(.neu-modal *)::placeholder {
+  color: #6b7280 !important;
+  opacity: 1;
+}
+
+.neu-form-scope input:disabled:not(.neu-modal *),
+.neu-form-scope select:disabled:not(.neu-modal *),
+.neu-form-scope textarea:disabled:not(.neu-modal *) {
+  color: #1f2937 !important;
+  opacity: 1;
+}
+
+.neu-form-scope select:not(.neu-modal *) option {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.neu-form-scope input:not(.neu-modal *):-webkit-autofill {
+  -webkit-text-fill-color: #111827 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #e8edf4 inset !important;
+}
+
+.neu-form-scope .Spreadsheet__data-viewer,
+.neu-form-scope .Spreadsheet__data-editor input {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
+
+.neu-form-scope input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not(.bg-transparent):not(.border-0):not(.Spreadsheet__data-editor input):not(.neu-modal *),
+.neu-form-scope select:not(.neu-modal *),
+.neu-form-scope textarea:not(.border-0):not(.neu-modal *) {
   background-color: #e8edf4 !important;
   box-shadow: inset 3px 3px 7px #c8cfd8, inset -3px -3px 7px #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.65) !important;
   border-radius: 0.75rem !important;
   transition: all 0.2s ease;
 }
 
-.neu-form-scope input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
-.neu-form-scope select:focus,
-.neu-form-scope textarea:focus {
+.neu-form-scope input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not(.bg-transparent):not(.border-0):not(.Spreadsheet__data-editor input):not(.neu-modal *):focus,
+.neu-form-scope select:not(.neu-modal *):focus,
+.neu-form-scope textarea:not(.border-0):not(.neu-modal *):focus {
   box-shadow: inset 4px 4px 8px #c2c9d4, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(59, 130, 246, 0.35) !important;
   outline: none !important;
 }

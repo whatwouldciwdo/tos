@@ -104,12 +104,12 @@ export default function PositionForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <label className="text-xs text-gray-300">Nama Jabatan</label>
           <input
             type="text"
-            className="w-full rounded-md border border-[#42ff6b]/60 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
-            style={{ color: 'white' }}
+            className="w-full neu-inset px-3.5 py-2.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 placeholder:text-gray-400"
+            style={{ color: "#ffffff" }}
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -117,12 +117,12 @@ export default function PositionForm({
           />
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <label className="text-xs text-gray-300">Kode (opsional)</label>
           <input
             type="text"
-            className="w-full rounded-md border border-[#42ff6b]/60 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
-            style={{ color: 'white' }}
+            className="w-full neu-inset px-3.5 py-2.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 placeholder:text-gray-400"
+            style={{ color: "#ffffff" }}
             value={code || ""}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="Kode internal"
@@ -131,12 +131,12 @@ export default function PositionForm({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <label className="text-xs text-gray-300">Bidang</label>
           <select
-            className="w-full rounded-md border border-[#42ff6b]/60 bg-[#262626] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
-            style={{ color: 'white' }}
-            required
+            className="w-full neu-inset px-3.5 py-2.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 bg-[#1f2227] disabled:opacity-60"
+            style={{ color: "#ffffff" }}
+            required={!isGlobal}
             value={bidangId ?? ""}
             onChange={(e) =>
               setBidangId(e.target.value ? Number(e.target.value) : "")
@@ -156,12 +156,12 @@ export default function PositionForm({
           </p>
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <label className="text-xs text-gray-300">Level Order (opsional)</label>
           <input
             type="number"
-            className="w-full rounded-md border border-[#42ff6b]/60 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
-            style={{ color: 'white' }}
+            className="w-full neu-inset px-3.5 py-2.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 placeholder:text-gray-400"
+            style={{ color: "#ffffff" }}
             value={levelOrder ?? ""}
             onChange={(e) =>
               setLevelOrder(e.target.value)
@@ -172,20 +172,20 @@ export default function PositionForm({
       </div>
 
       <div className="flex flex-wrap gap-6 text-xs text-gray-200">
-        <label className="inline-flex items-center gap-2">
+        <label className="inline-flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border border-[#42ff6b]/60 bg-transparent"
+            className="h-4 w-4 rounded accent-[#42ff6b]"
             checked={isGlobal}
             onChange={(e) => setIsGlobal(e.target.checked)}
           />
           <span>Global (tidak terikat bidang)</span>
         </label>
 
-        <label className="inline-flex items-center gap-2">
+        <label className="inline-flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border border-[#42ff6b]/60 bg-transparent"
+            className="h-4 w-4 rounded accent-[#42ff6b]"
             checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
           />
@@ -193,20 +193,24 @@ export default function PositionForm({
         </label>
       </div>
 
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && (
+        <div className="neu-inset-sm px-3.5 py-2.5 border border-red-500/30">
+          <p className="text-xs text-red-400">{error}</p>
+        </div>
+      )}
 
       <div className="flex gap-3 pt-4">
         <button
           type="submit"
           disabled={loading}
-          className="rounded-full bg-[#42ff6b] px-6 py-2 text-xs font-semibold text-black hover:bg-[#39e05d] transition disabled:opacity-60"
+          className="neu-btn-accent rounded-xl px-6 py-2.5 text-xs font-semibold transition disabled:opacity-60"
         >
           {loading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Buat Jabatan"}
         </button>
         <button
           type="button"
           onClick={() => router.push("/admin/positions")}
-          className="rounded-full border border-gray-500 px-6 py-2 text-xs text-gray-200 hover:bg-white/5 transition"
+          className="neu-btn rounded-xl px-6 py-2.5 text-xs text-gray-200 transition"
         >
           Batal
         </button>

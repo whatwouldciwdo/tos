@@ -262,7 +262,7 @@ export default function TorDetailClient({
 
       {/* Modal for Note */}
       {showNoteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="neu-modal fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-white">
           <div className="neu-card w-full max-w-lg p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-white">
@@ -289,6 +289,7 @@ export default function TorDetailClient({
                 value={actionNote}
                 onChange={(e) => setActionNote(e.target.value)}
                 className="w-full px-3.5 py-2.5 neu-inset text-white focus:outline-none min-h-[140px] text-sm"
+                style={{ color: "#ffffff" }}
                 placeholder="Tuliskan catatan anda disini..."
               />
               {showNoteModal === "revise" && unresolvedComments.length > 0 && (

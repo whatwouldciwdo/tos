@@ -86,6 +86,7 @@ export default function LoginPage() {
                 type="text"
                 placeholder="username"
                 className="w-full neu-inset px-4 py-3.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 placeholder:text-gray-400"
+                style={{ color: "#ffffff" }}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
@@ -96,6 +97,7 @@ export default function LoginPage() {
                 type="password"
                 placeholder="password"
                 className="w-full neu-inset px-4 py-3.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 placeholder:text-gray-400"
+                style={{ color: "#ffffff" }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"

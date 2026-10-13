@@ -99,69 +99,69 @@ export default function UserForm({ mode, positions, initialData }: UserFormProps
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <label className="text-xs text-gray-300">Nama</label>
           <input
             type="text"
-            className="w-full rounded-md border border-[#42ff6b]/60 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
+            className="w-full neu-inset px-3.5 py-2.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 placeholder:text-gray-400"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Nama lengkap"
-            style={{ color: 'white' }}
+            style={{ color: "#ffffff" }}
           />
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <label className="text-xs text-gray-300">Username (untuk login)</label>
           <input
             type="text"
-            className="w-full rounded-md border border-[#42ff6b]/60 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
+            className="w-full neu-inset px-3.5 py-2.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 placeholder:text-gray-400"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="username"
-            style={{ color: 'white' }}
+            style={{ color: "#ffffff" }}
           />
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <label className="text-xs text-gray-300">Email (untuk notifikasi)</label>
           <input
             type="email"
-            className="w-full rounded-md border border-[#42ff6b]/60 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
+            className="w-full neu-inset px-3.5 py-2.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 placeholder:text-gray-400"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="email@plnindonesiapower.com"
-            style={{ color: 'white' }}
+            style={{ color: "#ffffff" }}
           />
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <label className="text-xs text-gray-300">
             Password {isEdit && <span className="text-gray-400">(kosongkan jika tidak diubah)</span>}
           </label>
           <input
             type="password"
-            className="w-full rounded-md border border-[#42ff6b]/60 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
+            className="w-full neu-inset px-3.5 py-2.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 placeholder:text-gray-400"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder={isEdit ? "•••••••" : "Minimal 6 karakter"}
-            style={{ color: 'white' }}
+            style={{ color: "#ffffff" }}
           />
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <label className="text-xs text-gray-300">Jabatan</label>
           <select
-            className="w-full rounded-md border border-[#42ff6b]/60 bg-[#262626] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#42ff6b] focus:border-transparent"
+            className="w-full neu-inset px-3.5 py-2.5 text-sm text-white outline-none focus:ring-1 focus:ring-[#42ff6b]/50 bg-[#1f2227]"
             value={positionId}
             onChange={(e) =>
               setPositionId(e.target.value ? Number(e.target.value) : "")
             }
-            style={{ color: 'white' }}
+            style={{ color: "#ffffff" }}
           >
             <option value="" disabled>
               Pilih jabatan
@@ -176,20 +176,20 @@ export default function UserForm({ mode, positions, initialData }: UserFormProps
       </div>
 
       <div className="flex flex-wrap gap-6 text-xs text-gray-200">
-        <label className="inline-flex items-center gap-2">
+        <label className="inline-flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border border-[#42ff6b]/60 bg-transparent"
+            className="h-4 w-4 rounded accent-[#42ff6b]"
             checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
           />
           <span>Active</span>
         </label>
 
-        <label className="inline-flex items-center gap-2">
+        <label className="inline-flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border border-[#42ff6b]/60 bg-transparent"
+            className="h-4 w-4 rounded accent-[#42ff6b]"
             checked={isSuperAdmin}
             onChange={(e) => setIsSuperAdmin(e.target.checked)}
           />
@@ -198,23 +198,23 @@ export default function UserForm({ mode, positions, initialData }: UserFormProps
       </div>
 
       {error && (
-        <p className="text-xs text-red-400">
-          {error}
-        </p>
+        <div className="neu-inset-sm px-3.5 py-2.5 border border-red-500/30">
+          <p className="text-xs text-red-400">{error}</p>
+        </div>
       )}
 
       <div className="flex gap-3 pt-4">
         <button
           type="submit"
           disabled={loading}
-          className="rounded-full bg-[#42ff6b] px-6 py-2 text-xs font-semibold text-black hover:bg-[#39e05d] transition disabled:opacity-60"
+          className="neu-btn-accent rounded-xl px-6 py-2.5 text-xs font-semibold transition disabled:opacity-60"
         >
           {loading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Buat User"}
         </button>
         <button
           type="button"
           onClick={() => router.push("/admin")}
-          className="rounded-full border border-gray-500 px-6 py-2 text-xs text-gray-200 hover:bg-white/5 transition"
+          className="neu-btn rounded-xl px-6 py-2.5 text-xs text-gray-200 transition"
         >
           Batal
         </button>
