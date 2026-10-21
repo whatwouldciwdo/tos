@@ -162,11 +162,18 @@ export function FieldWithComment({
               />
               {fieldComments.length > 0 && (
                 <span
-                  className={`absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[10px] font-bold flex items-center justify-center shadow ${
-                    unresolvedCount > 0 ? "bg-amber-500" : "bg-emerald-500"
+                  title={
+                    unresolvedCount > 0
+                      ? `${unresolvedCount} revisi pada field ini`
+                      : "Semua revisi selesai"
+                  }
+                  className={`absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[10px] font-bold flex items-center justify-center shadow-md ${
+                    unresolvedCount > 0
+                      ? "bg-red-600 ring-2 ring-white/60"
+                      : "bg-emerald-600 ring-2 ring-white/60"
                   }`}
                 >
-                  {fieldComments.length}
+                  {unresolvedCount > 0 ? unresolvedCount : "✓"}
                 </span>
               )}
             </button>

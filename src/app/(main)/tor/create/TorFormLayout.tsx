@@ -18,6 +18,64 @@ import { useCollaboration } from "@/hooks/useCollaboration";
 import { useFieldSync } from "@/hooks/useFieldSync";
 import CollabPresence from "@/components/CollabPresence";
 
+// Map fields to their corresponding tab IDs for robust comment counting & navigation
+export const TAB_FIELD_MAP: Record<TabId, string[]> = {
+  "informasi-umum": [
+    "creationDate",
+    "creationYear",
+    "budgetType",
+    "workType",
+    "program",
+    "rkaYear",
+    "projectPeriod",
+    "projectStartDate",
+    "projectEndDate",
+    "executionYear",
+    "budgetAmount",
+    "budgetCurrency",
+  ],
+  "pendahuluan": [
+    "title",
+    "coverImage",
+    "introduction",
+    "background",
+    "objective",
+    "scope",
+    "warranty",
+    "acceptanceCriteria",
+    "description",
+  ],
+  "tahapan-pekerjaan": [
+    "workStages",
+    "workStagesExplanation",
+    "deliveryRequirements",
+    "handoverPoint",
+    "handoverMechanism",
+  ],
+  "usulan": [
+    "directorProposals",
+    "fieldDirectorProposals",
+    "vendorRequirements",
+    "procurementMethod",
+    "paymentTerms",
+    "penaltyRules",
+    "budgetItems",
+    "otherRequirements",
+    "riskAssessment",
+    "revisionTermOfReference",
+  ],
+  "lembar-pengesahan": [
+    "approvalSignatures",
+  ],
+  "lampiran": [
+    "attachments",
+    "technicalParticulars",
+    "inspectionTestingPlans",
+    "documentRequestSheets",
+    "performanceGuarantees",
+  ],
+};
+
 interface TorFormLayoutProps {
   torId?: number;
   initialData?: TorFormData;
@@ -533,14 +591,27 @@ export default function TorFormLayout({
   const handleAddFieldComment = useCallback(
     async (fieldKey: string, fieldLabel: string, commentText: string) => {
       if (!torId) throw new Error("TOR belum disimpan");
+
+      // Resolve proper tabId from activeTab or TAB_FIELD_MAP fallback
+      let commentTabId: TabId = activeTab;
+      let commentTabLabel = activeTabLabel;
+      for (const [tId, fields] of Object.entries(TAB_FIELD_MAP)) {
+        if (fields.includes(fieldKey)) {
+          commentTabId = tId as TabId;
+          const found = tabs.find((t) => t.id === tId);
+          if (found) commentTabLabel = found.label;
+          break;
+        }
+      }
+
       const res = await fetch(`/api/tor/${torId}/comments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           fieldKey,
           fieldLabel,
-          tabId: activeTab,
-          tabLabel: activeTabLabel,
+          tabId: commentTabId,
+          tabLabel: commentTabLabel,
           comment: commentText,
         }),
       });
@@ -552,7 +623,7 @@ export default function TorFormLayout({
         applyUpdatedFieldComments(data.fieldComments);
       }
     },
-    [torId, activeTab, activeTabLabel, applyUpdatedFieldComments]
+    [torId, activeTab, activeTabLabel, tabs, applyUpdatedFieldComments]
   );
 
   const handleUpdateFieldComment = useCallback(
@@ -613,8 +684,18 @@ export default function TorFormLayout({
 
   const jumpToFieldComment = useCallback(
     async (comment: TorFieldComment) => {
-      if (comment.tabId && comment.tabId !== activeTab) {
-        setActiveTab(comment.tabId as TabId);
+      let targetTab: TabId = (comment.tabId as TabId) || "informasi-umum";
+      if (!comment.tabId || !tabs.some((t) => t.id === comment.tabId)) {
+        for (const [tabKey, fields] of Object.entries(TAB_FIELD_MAP)) {
+          if (fields.includes(comment.fieldKey)) {
+            targetTab = tabKey as TabId;
+            break;
+          }
+        }
+      }
+
+      if (targetTab !== activeTab) {
+        setActiveTab(targetTab);
         await new Promise((resolve) => setTimeout(resolve, 250));
       }
       const el = document.getElementById(`field-${comment.fieldKey}`);
@@ -622,7 +703,7 @@ export default function TorFormLayout({
         el.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     },
-    [activeTab]
+    [activeTab, tabs]
   );
 
   const unresolvedComments = useMemo(
@@ -867,7 +948,11 @@ export default function TorFormLayout({
         {/* Tab Navigation */}
         <div className="neu-inset p-2 flex gap-2 overflow-x-auto">
           {tabs.map((tab) => {
-            const tabComments = fieldComments.filter((c) => c.tabId === tab.id);
+            const tabComments = fieldComments.filter(
+              (c) =>
+                c.tabId === tab.id ||
+                Boolean(TAB_FIELD_MAP[tab.id]?.includes(c.fieldKey))
+            );
             const tabUnresolved = tabComments.filter((c) => !c.resolved).length;
             return (
               <button
@@ -897,13 +982,18 @@ export default function TorFormLayout({
                 )}
                 {tabComments.length > 0 && (
                   <span
-                    className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold ${
+                    title={
                       tabUnresolved > 0
-                        ? "bg-amber-500 text-white"
-                        : "bg-emerald-600 text-white"
+                        ? `${tabUnresolved} revisi pada ${tab.label}`
+                        : `Semua (${tabComments.length}) revisi pada ${tab.label} selesai`
+                    }
+                    className={`inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-xs font-bold shrink-0 shadow-md ${
+                      tabUnresolved > 0
+                        ? "bg-red-600 text-white ring-2 ring-red-400/50 shadow-[0_2px_8px_rgba(220,38,38,0.55)]"
+                        : "bg-emerald-600 text-white ring-2 ring-emerald-400/40"
                     }`}
                   >
-                    {tabUnresolved > 0 ? tabUnresolved : tabComments.length}
+                    {tabUnresolved > 0 ? tabUnresolved : "✓"}
                   </span>
                 )}
               </button>
