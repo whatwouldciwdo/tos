@@ -5,7 +5,7 @@ import TorListItem from "./TorListItem";
 import { cleanPrisma } from "@/lib/prisma-clean";
 import DashboardStats from "./components/DashboardStats";
 import Sidebar from "../components/Sidebar";
-import { PlusCircle, FileText, CheckCircle } from "lucide-react";
+import { PlusCircle, FileText, CheckCircle, FileEdit } from "lucide-react";
 
 type PageProps = {
   searchParams?: Promise<{
@@ -16,7 +16,9 @@ type PageProps = {
 export default async function TorListPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const sessionUser = await getCurrentUser();
-  const view = params?.view === "approve" ? "approve" : "mine";
+  const rawView = params?.view;
+  const view: "mine" | "approve" | "drafts" =
+    rawView === "approve" ? "approve" : rawView === "drafts" ? "drafts" : "mine";
 
   // Ambil data user lengkap
   const dbUser = await prisma.user.findUnique({
@@ -89,6 +91,33 @@ export default async function TorListPage({ searchParams }: PageProps) {
       (t) => t.statusStage !== "DRAFT" && !t.isFinalApproved
     ).length;
     stats.completed = torList.filter((t) => t.isFinalApproved).length;
+  } else if (view === "drafts") {
+    // === DRAFT SAYA ===
+    const whereClause = isSuperAdmin
+      ? {}
+      : { creatorUserId: sessionUser.id };
+
+    const allMyTors = await prisma.tor.findMany({
+      where: whereClause,
+      include: {
+        bidang: true,
+        creator: {
+          include: {
+            position: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    stats.total = allMyTors.length;
+    stats.drafts = allMyTors.filter((t) => t.statusStage === "DRAFT").length;
+    stats.pending = allMyTors.filter(
+      (t) => t.statusStage !== "DRAFT" && !t.isFinalApproved
+    ).length;
+    stats.completed = allMyTors.filter((t) => t.isFinalApproved).length;
+
+    torList = allMyTors.filter((t) => t.statusStage === "DRAFT");
   } else {
     // === TOR YANG PERLU SAYA APPROVE ===
 
@@ -294,6 +323,18 @@ export default async function TorListPage({ searchParams }: PageProps) {
               <CheckCircle size={16} />
               Pending Approvals
             </Link>
+
+            <Link
+              href="/tor?view=drafts"
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+                view === "drafts"
+                  ? "neu-btn-accent font-semibold"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              <FileEdit size={16} />
+              My Drafts
+            </Link>
           </div>
 
           {/* List TOR */}
@@ -315,7 +356,11 @@ export default async function TorListPage({ searchParams }: PageProps) {
                     📄
                   </div>
                   <h3 className="text-xl font-semibold mb-2">
-                    {view === "mine" ? "No TORs Yet" : "No Pending Approvals"}
+                    {view === "mine"
+                      ? "No TORs Yet"
+                      : view === "drafts"
+                      ? "No Drafts Found"
+                      : "No Pending Approvals"}
                   </h3>
                   <p className="text-gray-400 mb-6 text-sm">
                     {view === "mine"

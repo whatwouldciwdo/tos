@@ -12,7 +12,7 @@ import { useAlertModal, useConfirmModal } from "@/hooks/useModal";
 type TorListItemProps = {
   tor: any;
   isCreator: boolean;
-  view: "mine" | "approve";
+  view: "mine" | "approve" | "drafts";
   workflowSteps?: any[];
 };
 
@@ -159,7 +159,7 @@ export default function TorListItem({ tor, isCreator, view, workflowSteps = [] }
         )}
 
         {/* Action Buttons */}
-        {view === "mine" && isCreator && tor.statusStage === "DRAFT" && (
+        {(view === "mine" || view === "drafts") && isCreator && tor.statusStage === "DRAFT" && (
           <div className="mt-4 pt-4 border-t border-white/5 flex gap-3">
             <button
               onClick={handleSubmit}
