@@ -24,6 +24,11 @@ ARG NEXT_PUBLIC_WS_URL=ws://localhost:3121
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
 
+# Prisma 6 loads prisma.config.ts during generate/build and requires a valid
+# DATABASE_URL. No connection is made at this stage, so use a non-secret dummy
+# URL. The runner receives the real DATABASE_URL from online.env at runtime.
+ENV DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build?schema=public"
+
 # Generate Prisma Client
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN npx prisma generate
