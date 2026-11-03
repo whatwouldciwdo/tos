@@ -1,0 +1,34 @@
+name: tor-online-public
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?NEXT_PUBLIC_APP_URL is required}
+        NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:?NEXT_PUBLIC_WS_URL is required}
+    restart: unless-stopped
+    env_file:
+      - ${APP_ENV_FILE:-online.env}
+    environment:
+      NODE_ENV: production
+      PORT: 3120
+    volumes:
+      - online_uploads:/app/public/uploads
+    ports:
+      - "127.0.0.1:3120:3120"
+
+  ws:
+    build:
+      context: .
+      dockerfile: Dockerfile.ws
+    restart: unless-stopped
+    environment:
+      PORT_WS: 3121
+      HOST: 0.0.0.0
+    ports:
+      - "127.0.0.1:3121:3121"
+
+volumes:
+  online_uploads:

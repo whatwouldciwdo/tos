@@ -56,19 +56,19 @@ nano .env
 Isi default file `.env`:
 ```env
 # Database Connection (PostgreSQL Terpusat)
-DATABASE_URL="postgresql://postgres:Cilego2026.@10.8.140.69:5432/tor_db?schema=public"
+DATABASE_URL="postgresql://APP_USER:CHANGE_ME@10.8.140.69:5432/tor_db?schema=public"
 
 # Auth & Security
-JWT_SECRET="ini-rahasia-yang-agak-panjang-dikit"
+JWT_SECRET="GENERATE_A_LONG_RANDOM_SECRET"
 
 # External API Keys
-NEXT_PUBLIC_TINYMCE_API_KEY="ffkk71r09jwdb56vpn73og6apiid5u69g6xgjnbhd9ig9p4p"
+NEXT_PUBLIC_TINYMCE_API_KEY="CHANGE_ME"
 
 # SMTP Email Configuration
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT=587
-SMTP_USER="sispltguclg@gmail.com"
-SMTP_PASS="qnol jzfw nnky rrov"
+SMTP_USER="CHANGE_ME"
+SMTP_PASS="CHANGE_ME"
 
 # URL Aplikasi (Ganti IP dengan IP Server Ubuntu tempat aplikasi berjalan)
 NEXT_PUBLIC_APP_URL="http://10.8.140.67:3120"
