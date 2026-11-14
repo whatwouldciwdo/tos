@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { TorFormData, BudgetItem } from "../types";
 import Decimal from "decimal.js";
+import BudgetPasteModal from "./BudgetPasteModal";
+import { FileSpreadsheet, Plus, Copy, Trash2, Check } from "lucide-react";
 
 interface BudgetTableProps {
   formData: TorFormData;
@@ -15,6 +17,8 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
   const ppnRate = formData.ppnRate ?? 11; // Default to 11% if not set
   const ppnIncluded = formData.ppnIncluded ?? true;
   const budgetItemTotalsKey = budgetItems.map((item) => item.totalPrice).join(",");
+  const [isPasteModalOpen, setIsPasteModalOpen] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   // ✅ FIX: Calculate totals using useMemo for display only
   const calculatedTotals = useMemo(() => {
@@ -113,6 +117,44 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
     }).format(value);
   };
 
+  const handleApplyPaste = (newItems: BudgetItem[], mode: "append" | "replace") => {
+    let updated: BudgetItem[];
+    if (mode === "replace") {
+      updated = newItems;
+    } else {
+      updated = [...budgetItems, ...newItems];
+    }
+    onChange({ budgetItems: updated });
+    recalculateTotals(updated);
+  };
+
+  const copyTableToExcel = () => {
+    if (budgetItems.length === 0) return;
+    const header = ["No", "Item", "Description", "Qty", "Unit", "Unit Price", "Total Price"].join("\t");
+    const rows = budgetItems.map((item, idx) => [
+      idx + 1,
+      item.item || "",
+      item.description || "",
+      item.quantity || 0,
+      item.unit || "Set",
+      item.unitPrice || 0,
+      item.totalPrice || 0,
+    ].join("\t"));
+    const tsv = [header, ...rows].join("\n");
+    navigator.clipboard.writeText(tsv).then(() => {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    });
+  };
+
+  const clearAllItems = () => {
+    if (!isEditing || budgetItems.length === 0) return;
+    if (window.confirm(`Yakin ingin menghapus seluruh ${budgetItems.length} item RAB?`)) {
+      onChange({ budgetItems: [] });
+      recalculateTotals([]);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto border border-gray-300 rounded-lg">
@@ -204,9 +246,33 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
             {budgetItems.length === 0 && (
               <tr>
                 <td colSpan={isEditing ? 8 : 7} className="px-3 py-8 text-center text-gray-500">
-                  {isEditing
-                    ? "No budget items yet. Click 'Add Item' to start."
-                    : "Belum ada data anggaran."}
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-sm">
+                      {isEditing
+                        ? "Belum ada item anggaran."
+                        : "Belum ada data anggaran."}
+                    </p>
+                    {isEditing && (
+                      <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
+                        <button
+                          type="button"
+                          onClick={addRow}
+                          className="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-md text-xs font-medium transition"
+                        >
+                          + Tambah Baris Manual
+                        </button>
+                        <span className="text-xs text-gray-400">atau</span>
+                        <button
+                          type="button"
+                          onClick={() => setIsPasteModalOpen(true)}
+                          className="px-3.5 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-md text-xs font-semibold flex items-center gap-1.5 border border-emerald-200 transition"
+                        >
+                          <FileSpreadsheet size={14} />
+                          Copas dari Excel / Spreadsheet
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </td>
               </tr>
             )}
@@ -215,13 +281,73 @@ export default function BudgetTable({ formData, onChange, isEditing = true }: Bu
       </div>
 
       {isEditing && (
-        <button
-          onClick={addRow}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
-        >
-          + Add Item
-        </button>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={addRow}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-1.5 shadow-sm transition"
+            >
+              <Plus size={16} />
+              + Add Item
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsPasteModalOpen(true)}
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm font-semibold flex items-center gap-1.5 shadow-sm transition"
+              title="Tempel puluhan atau ratusan baris langsung dari Excel"
+            >
+              <FileSpreadsheet size={16} />
+              📋 Copas dari Excel / Spreadsheet
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {budgetItems.length > 0 && (
+              <>
+                <button
+                  type="button"
+                  onClick={copyTableToExcel}
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 text-xs font-medium flex items-center gap-1 transition"
+                  title="Salin semua baris RAB ke clipboard format Excel"
+                >
+                  {copySuccess ? (
+                    <>
+                      <Check size={14} className="text-emerald-600" />
+                      <span className="text-emerald-700 font-semibold">Tersalin ke Clipboard!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={14} />
+                      <span>Salin ke Excel</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={clearAllItems}
+                  className="px-3 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-xs font-medium flex items-center gap-1 transition"
+                  title="Kosongkan seluruh baris anggaran"
+                >
+                  <Trash2 size={14} />
+                  <span>Hapus Semua ({budgetItems.length})</span>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
+
+      {/* Modal Copas Excel */}
+      <BudgetPasteModal
+        isOpen={isPasteModalOpen}
+        onClose={() => setIsPasteModalOpen(false)}
+        onApply={handleApplyPaste}
+        currency={formData.budgetCurrency || "IDR"}
+        existingCount={budgetItems.length}
+      />
 
       {/* Summary with precise formatting */}
       <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
