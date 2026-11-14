@@ -49,7 +49,7 @@ export async function getCurrentUser() {
   }
 
   const hasSuperAdminRole = user.position?.positionRoles?.some(
-    (pr) => pr.role?.name === "SUPER_ADMIN"
+    (pr) => pr.role?.name?.toUpperCase() === "SUPER_ADMIN" || pr.role?.name?.toUpperCase() === "ADMIN"
   );
 
   return {

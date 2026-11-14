@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import {
   Plus,
@@ -124,7 +125,7 @@ export default function Sidebar({
       id: "create",
       label: "create",
       icon: Plus,
-      onClick: () => router.push("/tor/create"),
+      href: "/tor/create",
       show: canCreate,
       active: pathname === "/tor/create",
     },
@@ -132,7 +133,7 @@ export default function Sidebar({
       id: "tors",
       label: "TORs",
       icon: FileText,
-      onClick: () => router.push("/tor"),
+      href: "/tor",
       show: true,
       active: pathname?.startsWith("/tor") && pathname !== "/tor/create",
     },
@@ -148,7 +149,7 @@ export default function Sidebar({
       id: "admin",
       label: "admin",
       icon: Shield,
-      onClick: () => router.push("/admin"),
+      href: "/admin",
       show: isSuperAdmin,
       active: pathname?.startsWith("/admin"),
     },
@@ -218,34 +219,50 @@ export default function Sidebar({
 
           {/* Menu Items */}
           <div className="flex flex-col items-center gap-6 my-4">
-            {menuItems.map(
-              (item) =>
-                item.show && (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={item.onClick}
-                    className={`flex flex-col items-center gap-2 text-xs transition-all duration-300 group cursor-pointer ${
+            {menuItems.map((item) => {
+              if (!item.show) return null;
+              const content = (
+                <>
+                  <div
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                       item.active
-                        ? "text-[#42ff6b]"
-                        : "text-gray-300 hover:text-[#42ff6b]"
+                        ? "neu-btn-active text-[#42ff6b]"
+                        : "neu-btn text-gray-200 group-hover:text-[#42ff6b]"
                     }`}
                   >
-                    <div
-                      className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                        item.active
-                          ? "neu-btn-active text-[#42ff6b]"
-                          : "neu-btn text-gray-200 group-hover:text-[#42ff6b]"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5" />
-                    </div>
-                    <span className="font-medium tracking-wide group-hover:text-[#42ff6b] transition-all duration-300">
-                      {item.label}
-                    </span>
-                  </button>
-                )
-            )}
+                    <item.icon className="w-5 h-5" />
+                  </div>
+                  <span className="font-medium tracking-wide group-hover:text-[#42ff6b] transition-all duration-300">
+                    {item.label}
+                  </span>
+                </>
+              );
+
+              const className = `flex flex-col items-center gap-2 text-xs transition-all duration-300 group cursor-pointer ${
+                item.active
+                  ? "text-[#42ff6b]"
+                  : "text-gray-300 hover:text-[#42ff6b]"
+              }`;
+
+              if (item.href) {
+                return (
+                  <Link key={item.id} href={item.href} className={className}>
+                    {content}
+                  </Link>
+                );
+              }
+
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={item.onClick}
+                  className={className}
+                >
+                  {content}
+                </button>
+              );
+            })}
 
             {/* Logout */}
             <button

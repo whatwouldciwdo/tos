@@ -53,6 +53,12 @@ export default function AdminTorCompletionSection({
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"completed" | "all" | "inProgress">("completed");
 
+  const completedCount = stats?.completed ?? tors.filter((t) => t.isCompleted).length;
+  const inProgressCount =
+    stats?.inProgress ??
+    tors.filter((t) => !t.isCompleted && t.statusStage !== "DRAFT").length;
+  const totalCount = stats?.total ?? tors.length;
+
   const filteredTors = useMemo(() => {
     return tors.filter((tor) => {
       // Tab filter
@@ -105,7 +111,7 @@ export default function AdminTorCompletionSection({
                     : "text-gray-300 hover:text-white"
                 }`}
               >
-                TOR Selesai ({stats.completed})
+                TOR Selesai ({completedCount})
               </button>
               <button
                 type="button"
@@ -116,7 +122,7 @@ export default function AdminTorCompletionSection({
                     : "text-gray-300 hover:text-white"
                 }`}
               >
-                Dalam Proses ({stats.inProgress})
+                Dalam Proses ({inProgressCount})
               </button>
               <button
                 type="button"
@@ -127,7 +133,7 @@ export default function AdminTorCompletionSection({
                     : "text-gray-300 hover:text-white"
                 }`}
               >
-                Semua ({stats.total})
+                Semua ({totalCount})
               </button>
             </div>
 

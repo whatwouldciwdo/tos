@@ -72,7 +72,7 @@ export default async function TorListPage({ searchParams }: PageProps) {
   });
 
   const hasSuperAdminRole = dbUser?.position?.positionRoles?.some(
-    (pr) => pr.role?.name === "SUPER_ADMIN"
+    (pr) => pr.role?.name?.toUpperCase() === "SUPER_ADMIN" || pr.role?.name?.toUpperCase() === "ADMIN"
   );
   const isSuperAdmin = Boolean(dbUser?.isSuperAdmin || hasSuperAdminRole);
   const userName = dbUser?.name || "User";

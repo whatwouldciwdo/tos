@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
     });
 
     const hasSuperAdminRole = user.position?.positionRoles?.some(
-      (pr) => pr.role?.name === "SUPER_ADMIN"
+      (pr) => pr.role?.name?.toUpperCase() === "SUPER_ADMIN" || pr.role?.name?.toUpperCase() === "ADMIN"
     );
 
     // Buat token (keep email for notifications)
