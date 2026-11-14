@@ -42,7 +42,7 @@ export interface AdminTorStats {
 }
 
 interface AdminTorCompletionSectionProps {
-  stats: AdminTorStats;
+  stats?: AdminTorStats;
   tors: AdminTorItem[];
 }
 
@@ -73,109 +73,7 @@ export default function AdminTorCompletionSection({
   return (
     <div className="space-y-8">
       {/* ======================================================== */}
-      {/* 1. STATISTIK JUMLAH TOR KESELURUHAN                       */}
-      {/* ======================================================== */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <FileText className="w-5 h-5 text-[#42ff6b]" />
-              Ringkasan Jumlah TOR Keseluruhan
-            </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Statistik agregat seluruh dokumen TOR yang tercatat di sistem.
-            </p>
-          </div>
-          <span className="neu-inset-sm px-3 py-1 text-xs font-semibold text-[#42ff6b]">
-            Total: {stats.total} TOR
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-          {/* Card 1: Total TOR */}
-          <div className="neu-card-sm p-4 relative overflow-hidden group hover:border-blue-500/40 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Total TOR
-              </span>
-              <div className="w-8 h-8 rounded-full neu-inset-sm flex items-center justify-center text-blue-400">
-                <FileText size={16} />
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-white tracking-tight">
-              {stats.total}
-            </div>
-            <p className="text-[11px] text-gray-400 mt-1">Keseluruhan Dokumen</p>
-          </div>
-
-          {/* Card 2: Selesai / Final Approved */}
-          <div className="neu-card-sm p-4 relative overflow-hidden group hover:border-[#42ff6b]/40 transition border-[#42ff6b]/20">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#42ff6b] uppercase tracking-wider">
-                TOR Selesai
-              </span>
-              <div className="w-8 h-8 rounded-full neu-inset-sm flex items-center justify-center text-[#42ff6b]">
-                <CheckCircle2 size={16} />
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-[#42ff6b] tracking-tight">
-              {stats.completed}
-            </div>
-            <p className="text-[11px] text-emerald-400/80 mt-1">Final Approved</p>
-          </div>
-
-          {/* Card 3: Sedang Proses */}
-          <div className="neu-card-sm p-4 relative overflow-hidden group hover:border-amber-500/40 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">
-                Sedang Review
-              </span>
-              <div className="w-8 h-8 rounded-full neu-inset-sm flex items-center justify-center text-amber-400">
-                <Clock size={16} />
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-amber-400 tracking-tight">
-              {stats.inProgress}
-            </div>
-            <p className="text-[11px] text-gray-400 mt-1">Tahap Persetujuan</p>
-          </div>
-
-          {/* Card 4: Draft */}
-          <div className="neu-card-sm p-4 relative overflow-hidden group hover:border-gray-500/40 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Draft
-              </span>
-              <div className="w-8 h-8 rounded-full neu-inset-sm flex items-center justify-center text-gray-400">
-                <FileEdit size={16} />
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-gray-300 tracking-tight">
-              {stats.drafts}
-            </div>
-            <p className="text-[11px] text-gray-400 mt-1">Belum Disubmit</p>
-          </div>
-
-          {/* Card 5: Rata-rata Durasi Selesai */}
-          <div className="neu-card-sm p-4 relative overflow-hidden col-span-2 sm:col-span-1 group hover:border-purple-500/40 transition">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">
-                Rata-rata Selesai
-              </span>
-              <div className="w-8 h-8 rounded-full neu-inset-sm flex items-center justify-center text-purple-400">
-                <Timer size={16} />
-              </div>
-            </div>
-            <div className="text-xl font-bold text-purple-300 tracking-tight">
-              {stats.avgDurationFormatted}
-            </div>
-            <p className="text-[11px] text-gray-400 mt-1">Durasi dari Submit</p>
-          </div>
-        </div>
-      </div>
-
-      {/* ======================================================== */}
-      {/* 2. WAKTU TOR SELESAI SESUAI JUDUL                         */}
+      {/* WAKTU TOR SELESAI SESUAI JUDUL                           */}
       {/* ======================================================== */}
       <section className="neu-card p-5 md:p-7">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">

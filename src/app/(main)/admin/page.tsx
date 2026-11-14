@@ -194,8 +194,8 @@ export default async function AdminPage() {
           </div>
         </header>
 
-        {/* 1. Ringkasan Jumlah TOR Keseluruhan & 2. Waktu TOR Selesai Sesuai Judul */}
-        <AdminTorCompletionSection stats={stats} tors={torItems} />
+        {/* Waktu TOR Selesai Sesuai Judul */}
+        <AdminTorCompletionSection tors={torItems} />
 
         {/* User Management Section */}
         <section className="neu-card p-5 md:p-7">

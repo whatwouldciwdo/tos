@@ -4,8 +4,30 @@ import { getCurrentUser } from "@/lib/auth";
 import TorListItem from "./TorListItem";
 import { cleanPrisma } from "@/lib/prisma-clean";
 import DashboardStats from "./components/DashboardStats";
+import OverallTorSummary, { OverallTorStats } from "./components/OverallTorSummary";
 import Sidebar from "../components/Sidebar";
 import { PlusCircle, FileText, CheckCircle, FileEdit } from "lucide-react";
+
+function formatDuration(ms: number): string {
+  if (ms < 0) ms = 0;
+  const totalMinutes = Math.floor(ms / (1000 * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const days = Math.floor(hours / 24);
+  const remHours = hours % 24;
+
+  if (totalMinutes < 60) {
+    return `${Math.max(1, totalMinutes)} Menit`;
+  }
+  if (days === 0) {
+    return minutes > 0 ? `${hours} Jam ${minutes} Mnt` : `${hours} Jam`;
+  }
+  const exactHours = (ms / (1000 * 60 * 60)).toFixed(1);
+  if (remHours === 0 && minutes === 0) {
+    return `${days} Hari (${exactHours} Jam)`;
+  }
+  return `${days} Hari ${remHours} Jam (${exactHours} Jam)`;
+}
 
 type PageProps = {
   searchParams?: Promise<{
@@ -222,6 +244,64 @@ export default async function TorListPage({ searchParams }: PageProps) {
   // ⭐ FIX: convert semua Decimal → number sebelum dikirim ke Client Component
   const torListSafe = cleanPrisma(torList);
 
+  // ⭐ STATISTIK KESELURUHAN (Hanya untuk Akun Role Admin / Super Admin)
+  let overallStats: OverallTorStats | null = null;
+  if (isSuperAdmin) {
+    const allTorsForStats = await prisma.tor.findMany({
+      select: {
+        id: true,
+        statusStage: true,
+        isFinalApproved: true,
+        createdAt: true,
+        updatedAt: true,
+        history: {
+          select: {
+            action: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    });
+
+    const total = allTorsForStats.length;
+    const completed = allTorsForStats.filter((t) => t.isFinalApproved).length;
+    const inProgress = allTorsForStats.filter(
+      (t) => t.statusStage !== "DRAFT" && !t.isFinalApproved
+    ).length;
+    const drafts = allTorsForStats.filter((t) => t.statusStage === "DRAFT").length;
+
+    const completedDurations: number[] = [];
+    allTorsForStats.forEach((t) => {
+      if (t.isFinalApproved) {
+        const submitEvent = t.history.find((h) => h.action === "SUBMIT");
+        const startTime = submitEvent
+          ? new Date(submitEvent.createdAt).getTime()
+          : new Date(t.createdAt).getTime();
+        const finalApprove = t.history.filter((h) => h.action === "APPROVE").pop();
+        const endTime = finalApprove
+          ? new Date(finalApprove.createdAt).getTime()
+          : new Date(t.updatedAt).getTime();
+        if (endTime >= startTime) {
+          completedDurations.push(endTime - startTime);
+        }
+      }
+    });
+
+    const avgMs =
+      completedDurations.length > 0
+        ? completedDurations.reduce((a, b) => a + b, 0) / completedDurations.length
+        : 0;
+
+    overallStats = {
+      total,
+      completed,
+      inProgress,
+      drafts,
+      avgDurationFormatted: avgMs > 0 ? formatDuration(avgMs) : "-",
+    };
+  }
+
   // Get current date for header
   const now = new Date();
   const dayName = now.toLocaleDateString("id-ID", { weekday: "long" });
@@ -295,8 +375,12 @@ export default async function TorListPage({ searchParams }: PageProps) {
             </Link>
           </div>
 
-          {/* Statistics */}
-          <DashboardStats stats={stats} />
+          {/* Statistics: Khusus Akun Role Admin melihat Ringkasan Keseluruhan Sistem, User biasa melihat stats dokumen personal */}
+          {isSuperAdmin && overallStats ? (
+            <OverallTorSummary stats={overallStats} />
+          ) : (
+            <DashboardStats stats={stats} />
+          )}
 
           {/* Tabs filter */}
           <div className="neu-inset p-1.5 inline-flex gap-2">
