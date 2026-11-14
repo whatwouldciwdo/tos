@@ -293,7 +293,7 @@ export default async function TorDetailPage({ params }: PageProps) {
               </div>
               <div>
                 <div className="text-sm font-semibold text-white">
-                  {new Date(tor.createdAt).toLocaleDateString("id-ID", {
+                  {new Date(tor.creationDate || tor.createdAt).toLocaleDateString("id-ID", {
                     dateStyle: "long",
                   })}
                 </div>

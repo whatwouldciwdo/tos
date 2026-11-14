@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, chmod } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
+import os from "os";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,20 +17,54 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
-    if (!allowedTypes.includes(file.type)) {
+    // Validate file extension and MIME type
+    const ext = path.extname(file.name || "").toLowerCase();
+    const allowedExtensions = [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+      ".webp",
+      ".pdf",
+      ".doc",
+      ".docx",
+      ".xls",
+      ".xlsx",
+    ];
+
+    const allowedMimeTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/octet-stream",
+      "",
+    ];
+
+    const isValidExt = allowedExtensions.includes(ext);
+    const isValidMime = !file.type || allowedMimeTypes.includes(file.type);
+
+    if (!isValidExt && !isValidMime) {
       return NextResponse.json(
-        { message: "Invalid file type. Only images, Word, PDF, and Excel files are allowed." },
+        {
+          message:
+            "Format file tidak didukung. Hanya file PDF, Word, Excel, dan Gambar yang diperbolehkan.",
+        },
         { status: 400 }
       );
     }
 
-    // Validate file size (max 5MB)
+    // Validate file size (max 25MB)
     const maxSize = 25 * 1024 * 1024; // 25MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { message: "File size exceeds 25MB limit" },
+        { message: "Ukuran file melebihi batas 25MB" },
         { status: 400 }
       );
     }
@@ -38,35 +73,62 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     // Create unique filename
-    const filename = `${uuidv4()}${path.extname(file.name)}`;
-    
-    // Save to public/uploads directory
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    
-    // Create directory if not exists
-    if (!fs.existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-      console.log("📁 Created uploads directory:", uploadDir);
-    }
+    const filename = `${uuidv4()}${ext || path.extname(file.name)}`;
 
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-    
-    console.log("✅ File uploaded successfully to:", filepath);
+    // Try primary directory: public/uploads
+    const primaryDir = path.join(process.cwd(), "public", "uploads");
+    const fallbackDir = path.join(os.tmpdir(), "tor_uploads");
+
+    let savedPath = "";
+
+    try {
+      if (!fs.existsSync(primaryDir)) {
+        await mkdir(primaryDir, { recursive: true });
+      }
+      const primaryFilepath = path.join(primaryDir, filename);
+      await writeFile(primaryFilepath, buffer);
+      try {
+        await chmod(primaryFilepath, 0o666);
+      } catch {}
+      savedPath = primaryFilepath;
+      console.log("✅ File uploaded successfully to primary:", primaryFilepath);
+    } catch (primaryErr: any) {
+      console.warn(
+        "⚠️ Primary upload directory failed (e.g. permission denied):",
+        primaryErr.message
+      );
+      // Fallback to os.tmpdir() which is always writable
+      if (!fs.existsSync(fallbackDir)) {
+        await mkdir(fallbackDir, { recursive: true });
+      }
+      const fallbackFilepath = path.join(fallbackDir, filename);
+      await writeFile(fallbackFilepath, buffer);
+      try {
+        await chmod(fallbackFilepath, 0o666);
+      } catch {}
+      savedPath = fallbackFilepath;
+      console.log(
+        "✅ File uploaded successfully to fallback:",
+        fallbackFilepath
+      );
+    }
 
     // Return the URL WITHOUT leading slash
     const url = `uploads/${filename}`;
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       url,
       filename,
       size: file.size,
-      type: file.type
+      type: file.type || ext,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Upload error:", error);
     return NextResponse.json(
-      { message: "Upload failed", error: String(error) },
+      {
+        message: "Upload failed: " + (error?.message || String(error)),
+        error: String(error),
+      },
       { status: 500 }
     );
   }

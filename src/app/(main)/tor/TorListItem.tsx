@@ -129,7 +129,7 @@ export default function TorListItem({ tor, isCreator, view, workflowSteps = [] }
           
           <div className="flex items-center gap-1.5 px-3 py-1.5 neu-inset-sm">
             <Calendar size={13} className="text-[#42ff6b]" />
-            <span>{new Date(tor.createdAt).toLocaleDateString("id-ID")}</span>
+            <span>{new Date(tor.creationDate || tor.createdAt).toLocaleDateString("id-ID")}</span>
           </div>
 
           {tor.budgetAmount && (
