@@ -1,0 +1,21 @@
+name: Auto Deploy to Server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: Deploy Container
+    runs-on: self-hosted
+    steps:
+      - name: Pull Latest Code and Rebuild Docker
+        run: |
+          cd ~/tor-online
+          git pull origin main
+          if [ -f "docker-compose.online.yml" ] && [ -f "online.env" ]; then
+            docker compose --env-file online.env -f docker-compose.online.yml up -d --build
+          else
+            docker compose up -d --build
+          fi
+          docker image prune -f
