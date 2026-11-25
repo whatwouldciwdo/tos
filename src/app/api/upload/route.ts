@@ -4,6 +4,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import os from "os";
+import { uploadToR2 } from "@/lib/r2";
 
 export async function POST(request: NextRequest) {
   try {
@@ -111,6 +112,14 @@ export async function POST(request: NextRequest) {
         "✅ File uploaded successfully to fallback:",
         fallbackFilepath
       );
+    }
+
+    // Upload to Cloudflare R2 for multi-server sync
+    try {
+      const contentType = file.type || "application/octet-stream";
+      await uploadToR2(buffer, filename, contentType);
+    } catch (r2Err: any) {
+      console.warn("⚠️ Cloudflare R2 upload warning:", r2Err.message);
     }
 
     // Return the URL WITHOUT leading slash
