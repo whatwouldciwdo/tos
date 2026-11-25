@@ -43,7 +43,7 @@ export async function GET(
 
         const contentType = mimeMap[ext] || "application/octet-stream";
 
-        return new NextResponse(buffer, {
+        return new NextResponse(new Uint8Array(buffer), {
           headers: {
             "Content-Type": contentType,
             "Content-Disposition": `inline; filename="${safeFilename}"`,
@@ -65,7 +65,7 @@ export async function GET(
         fs.writeFileSync(path.join(cacheDir, safeFilename), r2Result.buffer);
       } catch {}
 
-      return new NextResponse(r2Result.buffer, {
+      return new NextResponse(new Uint8Array(r2Result.buffer), {
         headers: {
           "Content-Type": r2Result.contentType,
           "Content-Disposition": `inline; filename="${safeFilename}"`,
