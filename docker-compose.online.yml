@@ -17,7 +17,7 @@ services:
     volumes:
       - online_uploads:/app/public/uploads
     ports:
-      - "127.0.0.1:3120:3120"
+      - "127.0.0.1:${APP_PORT:-3111}:3120"
 
   ws:
     build:
@@ -28,7 +28,7 @@ services:
       PORT_WS: 3121
       HOST: 0.0.0.0
     ports:
-      - "127.0.0.1:3121:3121"
+      - "127.0.0.1:${WS_PORT:-3112}:3121"
 
 volumes:
   online_uploads:
